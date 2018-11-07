@@ -21,7 +21,7 @@ int refreshMillis = 15;      // Refresh period in milliseconds
 // Projection clipping area
 GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
 
-bool fullScreenMode = false; // Full-screen or windowed mode?
+bool fullScreenMode = true; // Full-screen or windowed mode?
 bool paused = false;         // Movement paused or resumed
 GLfloat xSpeedSaved, ySpeedSaved;  // To support resume
 
@@ -321,6 +321,10 @@ int main(int argc, char** argv) {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
+	glScissor(0, 0, windowWidth, windowHeight);
+	glEnable(GL_SCISSOR_TEST);
+
+
 	glutDisplayFunc(display);     // Register callback handler for window re-paint
 	glutReshapeFunc(reshape);     // Register callback handler for window re-shape
 	glutTimerFunc(0, Timer, 0);   // First timer call immediately
@@ -328,7 +332,7 @@ int main(int argc, char** argv) {
 	glutSpecialUpFunc(specialKeys2); // Register callback handler for special-key event
 	glutKeyboardFunc(keyboard);   // Register callback handler for special-key event
 	glutKeyboardUpFunc(keyboard2);   // Register callback handler for special-key event
-	//glutFullScreen();             // Put into full screen
+	glutFullScreen();             // Put into full screen
 	glutMouseFunc(mouse);   // Register callback handler for mouse event
 	glutIgnoreKeyRepeat(1);
 	initGL();                     // Our own OpenGL initialization
