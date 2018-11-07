@@ -54,12 +54,12 @@ float cx = float((gl_FragCoord.x-w/2))*right*float(2)/float(w);
 		
 		
 
-float dpth =t;
-if(t>far-2)
+float dpth =length(t*dirvec);
+if(dpth>far)
 {discard;
 return;}
 //color = vec4(vec3(dpth)/far,1);
-color = vec4(colRGB.xyz,1);
+color = vec4(clamp(1-(dpth+50)/far,0,1)*colRGB.xyz,1);
 
 gl_FragDepth = dpth/far;
 return;
@@ -68,7 +68,9 @@ return;
 }
      
 )";
-	
+	struct vec2_i{
+	int x,y;
+	};
 	struct vec2 {
 		float x, y;
 	};

@@ -5,10 +5,10 @@
 #include <time.h>
 #include <vector>
 #include <list>
-#include <olcPixelGameEngine.h>
+#include <mys.h>
 namespace mazegen {
 	using namespace std;
-	void push_maze(int RoomRad, vector<vec2_i>& rooms) {
+	void push_maze(int RoomRad, vector<mys::vec2_i>& rooms) {
 		srand(time(0));
 
 		const int maze_size_x = RoomRad * 2 + 1;
@@ -91,7 +91,7 @@ namespace mazegen {
 			for (size_t x = 0; x < maze_size_x; x++)
 			{
 				if (maze[y][x] == true)
-					rooms.push_back(vec2_i{ (int)x-RoomRad,RoomRad-(int)y });
+					rooms.push_back(mys::vec2_i{ (int)x-RoomRad,RoomRad-(int)y });
 
 			}
 	}
