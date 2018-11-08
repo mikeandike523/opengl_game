@@ -291,6 +291,12 @@ int main(int argc, char** argv) {
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 		StaticTriangleColors.push_back(vec3{ 0,0,1 });
 
+
+		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + -150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + -150),(float)50,(float)(rmloc.y * 300 - 150)} });
+		StaticTriangleColors.push_back(vec3{ 0,1,0 });
+		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + -150),(float)50,(float)(rmloc.y * 300 - 150)} });
+		StaticTriangleColors.push_back(vec3{ 0,1,0 });
+
 		if (abs(roomOccupation(vec2_i{ rmloc.x + 1,rmloc.y }, roomRad, rooms) == 1) ){
 		
 			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300+150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300+150),(float)50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300+150),(float)-50,(float)(rmloc.y * 300 -150)} });
@@ -301,8 +307,7 @@ int main(int argc, char** argv) {
 				StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 				StaticTriangleColors.push_back(vec3{ 1,0, 0 });
 
-
-		
+			
 		}
 
 
@@ -316,7 +321,7 @@ int main(int argc, char** argv) {
 			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 - 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 - 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 - 150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 			StaticTriangleColors.push_back(vec3{ 1,0, 1 });
 
-
+		
 
 		}
 
@@ -330,7 +335,7 @@ int main(int argc, char** argv) {
 			StaticTriangleColors.push_back(vec3{ 0.5,0.5, 0.8 });
 
 
-
+	
 		}
 		if (abs(roomOccupation(vec2_i{ rmloc.x ,rmloc.y - 1 }, roomRad, rooms) == 1)) {
 
@@ -341,6 +346,7 @@ int main(int argc, char** argv) {
 			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 - 150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 			StaticTriangleColors.push_back(vec3{ 0.7,0.6, 0.2 });
 
+			
 
 
 		}

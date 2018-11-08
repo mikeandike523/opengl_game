@@ -128,6 +128,17 @@ return;
 	float component(vec3 target, vec3 base) {
 		return (target.x*base.x + target.y*base.y + target.z*base.z) / sqrt(base.x*base.x + base.y*base.y + base.z*base.z);
 	}
+
+	vec2 projection(vec2 target, vec2 base) {
+		float s = (target.x*base.x + target.y*base.y) / (base.x*base.x + base.y*base.y);
+		return vec2{ s*base.x,s*base.y };
+	}
+	vec3 projection(vec3 target, vec3 base) {
+		float s = (target.x*base.x + target.y*base.y+target.z*base.z) / (base.x*base.x + base.y*base.y+base.z*base.z);
+		return vec3{ s*base.x,s*base.y ,s*base.z};
+	}
+
+
 	//add vector projection if needed later
 	float determinant(mat2 m) {
 		return m.entry11*m.entry22 - m.entry12*m.entry21;
