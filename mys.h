@@ -5,11 +5,21 @@
 #include <vector>
 #include <iostream>
 namespace mys {
+
+
+
 	int ww, wh;
 	constexpr float STANDARD_EPSILON = 0.0005;
 	constexpr float NEAR_PLANE = 5.0;
 	constexpr float FAR_PLANE = 1500;
 	constexpr float ONE_METER = 300;
+	constexpr int EAST = 0;
+	constexpr int NORTH = 1;
+	constexpr int WEST = 2;
+	constexpr int SOUTH = 3;
+	constexpr int X_AXIS = 0;
+	constexpr int Y_AXIS = 1;
+	
 	GLint ShaderProgram;
 	const char* vertex_shader = R"(
 
@@ -122,6 +132,8 @@ return;
 	float crossProduct(vec2 a, vec2 b) {
 		return a.x*b.y - b.x*a.y;
 	}
+	vec2 perpendicular2(vec2 v) { return vec2{v.y,-v.x}; }
+
 	float component(vec2 target, vec2 base) {
 		return (target.x*base.x + target.y*base.y) / sqrt(base.x*base.x + base.y*base.y );
 	}
@@ -146,7 +158,13 @@ return;
 	float determinant(mat3 m) {
 		return m.entry11*(m.entry22*m.entry33 - m.entry23*m.entry32) - m.entry12*(m.entry21*m.entry33 - m.entry23*m.entry31) + m.entry13*(m.entry21*m.entry32-m.entry22*m.entry31);
 	}
+	vec2 normalize(vec2 v) {
+		return scalarMultiply((float)1/magnitude(v),v);
+	}
 
+	vec3 normalize(vec3 v) {
+		return scalarMultiply((float)1 / magnitude(v), v);
+	}
 
 	
 	bool inverse(mat2 m,mat2& result) {
@@ -645,6 +663,7 @@ return;
 		glVertex2f(subject.b.x, subject.b.y);
 		glVertex2f(subject.c.x, subject.c.y);
 		glEnd();
+
 		
 
 
@@ -652,4 +671,35 @@ return;
 
 
 	}
+
+	const vec2_i dirs[]{ vec2_i{1,0},vec2_i{0,1},vec2_i{-1,0},vec2_i{0,-1} };
+	vec2_i compassToVec2_i(int dir) {
+	
+		return dirs[dir];
+	}
+
+	vec2 closest(segment2_flat wall, vec2 player);
+		int checkCircleSegmentCollision(segment2_flat seg,
+		float x, float z, float rad)
+	{
+			if (magnitude(subtract(closest(seg, vec2{x,z}), vec2{ x,z }))<=rad)
+				return 1;
+			return 0;
+	}
+	//http://doswa.com/2009/07/13/circle-segment-intersectioncollision.html
+	vec2 closest(segment2_flat wall, vec2 player) {
+		vec2 wallvec{ wall.p1_x - wall.p0_x,wall.p1_y-wall.p0_y };
+		vec2 changevec{player.x-wall.p0_x,player.y-wall.p0_y};
+		float rng = magnitude(wallvec);
+		float comp = component(changevec, wallvec);
+		if (comp < 0)
+			return vec2{ wall.p0_x,wall.p0_y };
+		if(comp>rng)
+			return vec2{ wall.p1_x,wall.p1_y };
+		return add(vec2{ wall.p0_x,wall.p0_y }, scalarMultiply(comp, normalize(wallvec)));
+
+
+	}
+
+
 }

@@ -5,13 +5,57 @@
 #include <vector>
 #include <mys.h>
 #include <mazegen.h>
+using namespace mys;
 std::vector<mys::triangle3> StaticTriangles;
 std::vector<mys::vec3> StaticTriangleColors;
+std::vector<mys::segment2_flat> walls;
+std::vector<int> wallDirs;
+
+constexpr float WALL_BUFFER = 30;
+
+inline void gen_wall(int x, int z, int side) {
+	//vec2_i offs = compassToVec2_i(side);
+
+	if (side == EAST) {
+		float p0_x = (float)(x * 300 + 150);
+		float p0_y = (float)(z * 300 +150);
+		float p1_x = (float)(x * 300 + 150);
+		float p1_y = (float)(z * 300 + -150);
+		walls.push_back(segment2_flat{ p0_x,p0_y,p1_x,p1_y });
+	}
+
+	if (side == WEST) {
+		float p0_x = (float)(x * 300 - 150);
+		float p0_y = (float)(z * 300 + 150);
+		float p1_x = (float)(x * 300 - 150);
+		float p1_y = (float)(z * 300 + -150);
+		walls.push_back(segment2_flat{ p0_x,p0_y,p1_x,p1_y });
+	}
+
+	if (side == NORTH) {
+		float p0_x = (float)(x * 300 - 150);
+		float p0_y = (float)(z * 300 + 150);
+		float p1_x = (float)(x * 300 + 150);
+		float p1_y = (float)(z * 300 + 150);
+		walls.push_back(segment2_flat{ p0_x,p0_y,p1_x,p1_y });
+	}
+
+	if (side == SOUTH) {
+		float p0_x = (float)(x * 300 - 150);
+		float p0_y = (float)(z * 300 - 150);
+		float p1_x = (float)(x * 300 + 150);
+		float p1_y = (float)(z * 300 - 150);
+		walls.push_back(segment2_flat{ p0_x,p0_y,p1_x,p1_y });
+	}
+
+
+	
+	wallDirs.push_back(side);
+}
+
 mys::camera defaultCamera;
-using mys::ShaderProgram;
-using mys::ww;
-using mys::wh;
-using namespace mys;
+
+
 char title[] = "Game 1";  // Windowed mode's title
 int windowWidth = 640;     // Windowed mode's width
 int windowHeight = 480;     // Windowed mode's height
@@ -42,31 +86,44 @@ bool keyleftisdown = false;
 
 /* Callback handler for window re-paint event */
 void display() {
+	bool moving = false;
+	float nx=defaultCamera.position.x, nz=defaultCamera.position.z;
 	if (keyaisdown)
 	{
+		moving = true;
 
-		defaultCamera.position.x += cos(defaultCamera.angleXZ + M_PI_2) * 10;
-		defaultCamera.position.z += sin(defaultCamera.angleXZ + M_PI_2) * 10;
+		nx+= cos(defaultCamera.angleXZ + M_PI_2) * 10;
+		nz+= sin(defaultCamera.angleXZ + M_PI_2) * 10;
 	}
 	if (keydisdown)
 	{
-
-		defaultCamera.position.x += cos(defaultCamera.angleXZ - M_PI_2) * 10;
-		defaultCamera.position.z += sin(defaultCamera.angleXZ - M_PI_2) * 10;
+		moving = true;
+		nx+= cos(defaultCamera.angleXZ - M_PI_2) * 10;
+		nz+=sin(defaultCamera.angleXZ - M_PI_2) * 10;
 	}
 
 	if (keywisdown)
 	{
-
-		defaultCamera.position.x += cos(defaultCamera.angleXZ) * 10;
-		defaultCamera.position.z += sin(defaultCamera.angleXZ) * 10;
+		moving = true;
+		nx+= cos(defaultCamera.angleXZ) * 10;
+		nz+=sin(defaultCamera.angleXZ) * 10;
 	}
 
 	if (keysisdown)
 	{
+		moving = true;
+		nx+=- cos(defaultCamera.angleXZ) * 10;
+		nz+= - sin(defaultCamera.angleXZ) * 10;
+	}
+	if (moving) {
+	
+		defaultCamera.position.x = nx;
+		defaultCamera.position.z = nz;
 
-		defaultCamera.position.x -= cos(defaultCamera.angleXZ) * 10;
-		defaultCamera.position.z -= sin(defaultCamera.angleXZ) * 10;
+
+
+
+
 	}
 
 
@@ -266,11 +323,13 @@ int roomOccupation(vec2_i rm, int roomRad, int* rooms) {
 void setRoomOpen(vec2_i rm, int roomRad, int* rooms) {
 	rooms[(roomRad * 2 + 1)*(roomRad - rm.y) + (roomRad + rm.x)] = 0;
 }
+void cleanup() {
 
+}
 /* Main function: GLUT runs as a console application starting at main() */
 int main(int argc, char** argv) {
 
-
+	std::atexit(cleanup);
 	defaultCamera = mys::camera{ mys::vec3{0.0,0.0,0.0},(float)M_PI_2,0.0,500 };
 	const int roomRad = 15;
 	std::vector<mys::vec2_i> roomList;
@@ -306,8 +365,8 @@ int main(int argc, char** argv) {
 
 				StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 				StaticTriangleColors.push_back(vec3{ 1,0, 0 });
-
-			
+				gen_wall(rmloc.x, rmloc.y, EAST);
+					
 		}
 
 
@@ -321,7 +380,7 @@ int main(int argc, char** argv) {
 			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 - 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 - 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 - 150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 			StaticTriangleColors.push_back(vec3{ 1,0, 1 });
 
-		
+			gen_wall(rmloc.x, rmloc.y, WEST);
 
 		}
 
@@ -334,7 +393,7 @@ int main(int argc, char** argv) {
 			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 - 150),(float)-50,(float)(rmloc.y * 300 + 150)} });
 			StaticTriangleColors.push_back(vec3{ 0.5,0.5, 0.8 });
 
-
+			gen_wall(rmloc.x, rmloc.y, NORTH);
 	
 		}
 		if (abs(roomOccupation(vec2_i{ rmloc.x ,rmloc.y - 1 }, roomRad, rooms) == 1)) {
@@ -346,7 +405,7 @@ int main(int argc, char** argv) {
 			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 - 150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 			StaticTriangleColors.push_back(vec3{ 0.7,0.6, 0.2 });
 
-			
+			gen_wall(rmloc.x, rmloc.y, SOUTH);
 
 
 		}
