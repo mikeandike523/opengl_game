@@ -19,6 +19,8 @@ namespace mys {
 	constexpr int SOUTH = 3;
 	constexpr int X_AXIS = 0;
 	constexpr int Y_AXIS = 1;
+	constexpr int CONCAVE = 1;
+	constexpr int CONVEX = 1;
 	
 	GLint ShaderProgram;
 	const char* vertex_shader = R"(
@@ -673,10 +675,15 @@ return;
 	}
 
 	const vec2_i dirs[]{ vec2_i{1,0},vec2_i{0,1},vec2_i{-1,0},vec2_i{0,-1} };
+	const int opdirs[]{WEST,SOUTH,EAST,NORTH};
 	vec2_i compassToVec2_i(int dir) {
 	
 		return dirs[dir];
 	}
+	vec2_i compassOppositeVec2_i(int side) {
+		return dirs[opdirs[side]];
+	}
+
 
 	vec2 closest(segment2_flat wall, vec2 player);
 		int checkCircleSegmentCollision(segment2_flat seg,
@@ -700,6 +707,17 @@ return;
 
 
 	}
+
+	vec2 vec2_itovec2(vec2_i v) {
+		return vec2{ (float)v.x,(float)v.y };
+	}
+
+	int ConcaveOrConvexCorner(segment2_flat wall1, segment2_flat wall2, vec2 player) {
+	
+	
+	}
+
+
 
 
 }

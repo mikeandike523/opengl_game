@@ -121,9 +121,68 @@ void display() {
 		nz+= - sin(defaultCamera.angleXZ) * 600* fElapsedTime;
 	}
 	if (moving) {
-	
-		defaultCamera.position.x = nx;
-		defaultCamera.position.z = nz;
+		float nnx = nx;
+		float nnz = nz;
+		int ct = 0;
+		segment2_flat wall1;
+		int side1;
+
+		segment2_flat wall2;
+		int side2;
+		vec2 player{ defaultCamera.position.x,defaultCamera.position.z };
+		vec2 veloc{ nx - player.x,nz - player.y };
+		for (int i = 0;i < walls.size();i++) {
+			segment2_flat wall = walls[i];
+			int side = wallDirs[i];
+			if (checkCircleSegmentCollision(wall, player.x, player.y, WALL_BUFFER)) {
+				ct++;
+				if (ct == 1) {
+					wall1 = wall;
+					side1 = side;
+				}
+				if (ct == 2) {
+
+					wall2 = wall;
+					side2 = side;
+					break;
+				}
+			}
+
+
+		}
+		std::cout << ct<< std::endl;
+		if (ct == 1) {
+		
+				vec2 close = closest(wall1, player);
+				std::cout << close.x << "," << close.y << std::endl;
+				vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
+				vec2 orth = perpendicular2(diff);
+				vec2 nv = veloc;
+				if(dotProduct(veloc,vec2_itovec2(compassOppositeVec2_i(side1)))<STANDARD_EPSILON)
+					nv=projection(veloc, diff);
+				nnx = player.x + nv.x;
+				nnz = player.y + nv.y;
+
+
+
+		
+		}
+		if (ct == 2) {
+			if (side1==side2) {
+				vec2 close = closest(wall1, player);
+				std::cout << close.x << "," << close.y << std::endl;
+				vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
+				vec2 orth = perpendicular2(diff);
+				vec2 nv = veloc;
+				if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(side1))) < STANDARD_EPSILON)
+					nv = projection(veloc, diff);
+				nnx = player.x + nv.x;
+				nnz = player.y + nv.y;
+
+			}
+		}
+		defaultCamera.position.x = nnx;
+		defaultCamera.position.z = nnz;
 
 
 
