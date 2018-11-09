@@ -593,7 +593,7 @@ return;
 		return toShow;
 	}
 	void triangle2CullAndClipOutsideWindowAndRender(triangle2 subject,float left, float right, float top, float bottom,vec3 color,triangle3 parent,float focalDistance) {
-	//	std::cout << right <<","<<ww/2<< std::endl;
+
 
 		if (!cull(subject.a.x,subject.a.y, subject.b.x,subject.b.y,subject.c.x,subject.c.y,left,right,top,bottom))
 			return;

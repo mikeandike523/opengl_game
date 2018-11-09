@@ -150,11 +150,11 @@ void display() {
 
 
 		}
-		std::cout << ct<< std::endl;
+		
 		if (ct == 1) {
 		
 				vec2 close = closest(wall1, player);
-				std::cout << close.x << "," << close.y << std::endl;
+			
 				vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
 				vec2 orth = perpendicular2(diff);
 				vec2 nv = veloc;
@@ -170,7 +170,7 @@ void display() {
 		if (ct == 2) {
 			if (side1==side2) {
 				vec2 close = closest(wall1, player);
-				std::cout << close.x << "," << close.y << std::endl;
+			
 				vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
 				vec2 orth = perpendicular2(diff);
 				vec2 nv = veloc;
