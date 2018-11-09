@@ -5,6 +5,7 @@
 #include <vector>
 #include <mys.h>
 #include <mazegen.h>
+#include <ctime>
 using namespace mys;
 std::vector<mys::triangle3> StaticTriangles;
 std::vector<mys::vec3> StaticTriangleColors;
@@ -83,37 +84,41 @@ bool keydisdown = false;
 bool keyrightisdown = false;
 bool keyleftisdown = false;
 
-
+int current_ticks, delta_ticks;
+float fElapsedTime;
 /* Callback handler for window re-paint event */
 void display() {
+	current_ticks = glutGet(GLUT_ELAPSED_TIME);
 	bool moving = false;
-	float nx=defaultCamera.position.x, nz=defaultCamera.position.z;
+	float nx = defaultCamera.position.x;
+		float nz=defaultCamera.position.z;
+		
 	if (keyaisdown)
 	{
 		moving = true;
 
-		nx+= cos(defaultCamera.angleXZ + M_PI_2) * 10;
-		nz+= sin(defaultCamera.angleXZ + M_PI_2) * 10;
+		nx+= cos(defaultCamera.angleXZ + M_PI_2) * 600* fElapsedTime;
+		nz+= sin(defaultCamera.angleXZ + M_PI_2) * 600 * fElapsedTime;
 	}
 	if (keydisdown)
 	{
 		moving = true;
-		nx+= cos(defaultCamera.angleXZ - M_PI_2) * 10;
-		nz+=sin(defaultCamera.angleXZ - M_PI_2) * 10;
+		nx+= cos(defaultCamera.angleXZ - M_PI_2) * 600* fElapsedTime;
+		nz+=sin(defaultCamera.angleXZ - M_PI_2) * 600* fElapsedTime;
 	}
 
 	if (keywisdown)
 	{
 		moving = true;
-		nx+= cos(defaultCamera.angleXZ) * 10;
-		nz+=sin(defaultCamera.angleXZ) * 10;
+		nx+= cos(defaultCamera.angleXZ) * 600* fElapsedTime;
+		nz+=sin(defaultCamera.angleXZ) * 600* fElapsedTime;
 	}
 
 	if (keysisdown)
 	{
 		moving = true;
-		nx+=- cos(defaultCamera.angleXZ) * 10;
-		nz+= - sin(defaultCamera.angleXZ) * 10;
+		nx+=- cos(defaultCamera.angleXZ) * 600* fElapsedTime;
+		nz+= - sin(defaultCamera.angleXZ) * 600* fElapsedTime;
 	}
 	if (moving) {
 	
@@ -130,14 +135,14 @@ void display() {
 	if (keyleftisdown)
 	{
 
-		defaultCamera.angleXZ += M_PI / (float)32;
+		defaultCamera.angleXZ += (float)9*M_2_PI*fElapsedTime;
 	}
 
 
 	if (keyrightisdown)
 	{
 
-		defaultCamera.angleXZ -= M_PI / (float)32;
+		defaultCamera.angleXZ -= (float)9 * M_2_PI * fElapsedTime;
 	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -172,7 +177,11 @@ void display() {
 
 	glutSwapBuffers();  // Swap front and back buffers (of double buffered mode)
 
+	delta_ticks = glutGet(GLUT_ELAPSED_TIME)- current_ticks; //the time, in ms, that took to render the scene
+	if (delta_ticks > 0)
+		fElapsedTime = (float)delta_ticks / (float)1000;
 
+	glutPostRedisplay();
 }
 
 /* Call back when the windows is re-sized */
@@ -482,7 +491,7 @@ int main(int argc, char** argv) {
 
 	glutDisplayFunc(display);     // Register callback handler for window re-paint
 	glutReshapeFunc(reshape);     // Register callback handler for window re-shape
-	glutTimerFunc(0, Timer, 0);   // First timer call immediately
+	//glutTimerFunc(0, Timer, 0);   // First timer call immediately
 	glutSpecialFunc(specialKeys); // Register callback handler for special-key event
 	glutSpecialUpFunc(specialKeys2); // Register callback handler for special-key event
 	glutKeyboardFunc(keyboard);   // Register callback handler for special-key event
