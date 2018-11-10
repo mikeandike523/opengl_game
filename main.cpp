@@ -12,6 +12,7 @@ std::vector<mys::vec3> StaticTriangleColors;
 std::vector<mys::segment2_flat> walls;
 std::vector<int> wallDirs;
 
+
 constexpr float WALL_BUFFER = 30;
 
 inline void gen_wall(int x, int z, int side) {
@@ -179,6 +180,60 @@ void display() {
 				nnx = player.x + nv.x;
 				nnz = player.y + nv.y;
 
+			}
+			else {
+				int concavity = ConcaveOrConvexCorner(wall1, wall2, player);
+				if (concavity == CONVEX)
+				{
+					segment2_flat whichWall;
+					int whichSide;
+					int has1 = 0;
+					float ix1, iy1, ix2, iy2;
+					vec2 velocn = normalize(veloc);
+					if (get_line_intersection(wall1.p0_x, wall1.p0_y, wall1.p1_x, wall1.p1_y, player.x, player.y, player.x+velocn.x*WALL_BUFFER, player.y + velocn.y*WALL_BUFFER, ix1, iy1)) {
+						whichWall = wall1;
+						whichSide = side1;
+						has1 = 1;
+					
+					}
+					
+					if (get_line_intersection(wall2.p0_x, wall2.p0_y, wall2.p1_x, wall2.p1_y, player.x + velocn.x*WALL_BUFFER, player.y + velocn.y*WALL_BUFFER, player.x, player.y, ix2, iy2)) {
+						if (!has1) {
+							has1 = 1;
+							whichWall = wall2;
+							whichSide = side2;
+						}
+						else if(sqrt(pow(player.x-ix1,2)+pow(player.y-iy1,2))<= sqrt(pow(player.x-ix2, 2) + pow(player.y-iy2, 2))){
+							whichWall = wall2;
+							whichSide = side2;
+						}
+
+					}
+
+
+					if (has1) {
+						vec2 close = closest(whichWall, player);
+
+						vec2 diff = subtract(vec2{ whichWall.p1_x,whichWall.p1_y }, vec2{ whichWall.p0_x,whichWall.p0_y });
+					//	vec2 orth = perpendicular2(diff);
+						vec2 nv = veloc;
+						if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(whichSide))) < STANDARD_EPSILON)
+							nv = projection(veloc, diff);
+						nnx = player.x + nv.x;
+						nnz = player.y + nv.y;
+
+					}
+				
+
+
+
+
+				
+				
+				}
+			
+			
+			
 			}
 		}
 		defaultCamera.position.x = nnx;

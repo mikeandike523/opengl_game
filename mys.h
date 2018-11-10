@@ -711,11 +711,13 @@ return;
 	vec2 vec2_itovec2(vec2_i v) {
 		return vec2{ (float)v.x,(float)v.y };
 	}
-	/*
+	
+	
 	int ConcaveOrConvexCorner(segment2_flat wall1, segment2_flat wall2, vec2 player) {
+		
+		return CONVEX;
 	
-	
-	}*/
+	}
 
 
 
