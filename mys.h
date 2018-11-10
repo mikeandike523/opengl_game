@@ -720,6 +720,8 @@ return;
 	}
 
 	int ConcaveOrConvexCorner(segment2_flat wall1, segment2_flat wall2, vec2 player) {
+
+		//debug here
 		vec2 junction, a, b;
 		vec2 w1p0 = fromFlatSegment2(wall1, 0);
 
@@ -728,23 +730,23 @@ return;
 
 		vec2 w2p0 = fromFlatSegment2(wall2, 0);
 		vec2 w2p1 = fromFlatSegment2(wall2, 1);
-		if (magnitude(subtract(w1p0,w2p0)) < 8)
+		if (magnitude(subtract(w1p0,w2p0)) < 20)
 		{
 			junction = w1p0; a = w1p1; b = w2p1;
 
 		}
 
-		if (magnitude(subtract(w1p0, w2p1)) < 8)
+		if (magnitude(subtract(w1p0, w2p1)) < 20)
 		{
 			junction = w1p0; a = w1p1; b = w2p0;
 
 		}
-		if (magnitude(subtract(w1p1, w2p0)) <8)
+		if (magnitude(subtract(w1p1, w2p0)) <20)
 		{
 			junction = w2p0; a = w2p1; b = w1p0;
 
 		}
-		if (magnitude(subtract(w1p1, w2p1)) < 8)
+		if (magnitude(subtract(w1p1, w2p1)) < 20)
 		{
 			junction = w1p1; a = w1p0; b = w2p0;
 
@@ -760,9 +762,12 @@ return;
 		float max = std::max<float>( angleJA, angleJB );
 		float min = std::min<float>(angleJA, angleJB);
 
-		if (angleJP <= max && angleJP >= min)
+		if (angleJP <max && angleJP > min) {
+			std::cout << "concave" << std::endl;
 			return CONCAVE;
-
+		}
+		
+		std::cout << "convex" << std::endl;
 		return CONVEX;
 	
 	}

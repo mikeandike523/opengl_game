@@ -191,14 +191,14 @@ void display() {
 					int has1 = 0;
 					float ix1, iy1, ix2, iy2;
 					vec2 velocn = normalize(veloc);
-					if (get_line_intersection(wall1.p0_x, wall1.p0_y, wall1.p1_x, wall1.p1_y, player.x, player.y, player.x+velocn.x*WALL_BUFFER, player.y + velocn.y*WALL_BUFFER, ix1, iy1)) {
+					if (get_line_intersection(wall1.p0_x, wall1.p0_y, wall1.p1_x, wall1.p1_y, player.x, player.y, player.x+velocn.x*WALL_BUFFER*1.2, player.y + velocn.y*WALL_BUFFER*1.2, ix1, iy1)) {
 						whichWall = wall1;
 						whichSide = side1;
 						has1 = 1;
 					
 					}
 					
-					if (get_line_intersection(wall2.p0_x, wall2.p0_y, wall2.p1_x, wall2.p1_y, player.x + velocn.x*WALL_BUFFER, player.y + velocn.y*WALL_BUFFER, player.x, player.y, ix2, iy2)) {
+					if (get_line_intersection(wall2.p0_x, wall2.p0_y, wall2.p1_x, wall2.p1_y, player.x + velocn.x*WALL_BUFFER*1.2, player.y + velocn.y*WALL_BUFFER*1.2, player.x, player.y, ix2, iy2)) {
 						if (!has1) {
 							has1 = 1;
 							whichWall = wall2;
