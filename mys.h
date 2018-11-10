@@ -4,6 +4,7 @@
 #include <freeglut/glut.h>  // GLUT, include glu.h and gl.h
 #include <vector>
 #include <iostream>
+#include <algorithm>
 namespace mys {
 
 
@@ -19,7 +20,7 @@ namespace mys {
 	constexpr int SOUTH = 3;
 	constexpr int X_AXIS = 0;
 	constexpr int Y_AXIS = 1;
-	constexpr int CONCAVE = 1;
+	constexpr int CONCAVE = 0;
 	constexpr int CONVEX = 1;
 	
 	GLint ShaderProgram;
@@ -712,9 +713,56 @@ return;
 		return vec2{ (float)v.x,(float)v.y };
 	}
 	
-	
+	vec2 fromFlatSegment2(const segment2_flat&wall, int whichPoint) {
+		if(whichPoint)
+			return vec2{ wall.p1_x,wall.p1_y };
+		return vec2{ wall.p0_x,wall.p0_y };
+	}
+
 	int ConcaveOrConvexCorner(segment2_flat wall1, segment2_flat wall2, vec2 player) {
-		
+		vec2 junction, a, b;
+		vec2 w1p0 = fromFlatSegment2(wall1, 0);
+
+		vec2 w1p1= fromFlatSegment2(wall1, 1);
+
+
+		vec2 w2p0 = fromFlatSegment2(wall2, 0);
+		vec2 w2p1 = fromFlatSegment2(wall2, 1);
+		if (magnitude(subtract(w1p0,w2p0)) < 8)
+		{
+			junction = w1p0; a = w1p1; b = w2p1;
+
+		}
+
+		if (magnitude(subtract(w1p0, w2p1)) < 8)
+		{
+			junction = w1p0; a = w1p1; b = w2p0;
+
+		}
+		if (magnitude(subtract(w1p1, w2p0)) <8)
+		{
+			junction = w2p0; a = w2p1; b = w1p0;
+
+		}
+		if (magnitude(subtract(w1p1, w2p1)) < 8)
+		{
+			junction = w1p1; a = w1p0; b = w2p0;
+
+		}
+		vec2 ja = subtract(a, junction);
+		vec2 jb = subtract(b, junction);
+		vec2 jp = subtract(player, junction);
+
+		float angleJA = atan2(ja.y, ja.x);
+		float angleJB = atan2(jb.y, jb.x);
+		float angleJP = atan2(jp.y, jp.x);
+
+		float max = std::max<float>( angleJA, angleJB );
+		float min = std::min<float>(angleJA, angleJB);
+
+		if (angleJP <= max && angleJP >= min)
+			return CONCAVE;
+
 		return CONVEX;
 	
 	}
