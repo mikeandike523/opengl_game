@@ -154,10 +154,10 @@ void display() {
 		
 		if (ct == 1) {
 		
-				vec2 close = closest(wall1, player);
+			//	vec2 close = closest(wall1, player);
 			
 				vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
-				vec2 orth = perpendicular2(diff);
+				//vec2 orth = perpendicular2(diff);
 				vec2 nv = veloc;
 				if(dotProduct(veloc,vec2_itovec2(compassOppositeVec2_i(side1)))<STANDARD_EPSILON)
 					nv=projection(veloc, diff);
@@ -170,10 +170,10 @@ void display() {
 		}
 		if (ct == 2) {
 			if (side1==side2) {
-				vec2 close = closest(wall1, player);
+			//	vec2 close = closest(wall1, player);
 			
 				vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
-				vec2 orth = perpendicular2(diff);
+				//vec2 orth = perpendicular2(diff);
 				vec2 nv = veloc;
 				if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(side1))) < STANDARD_EPSILON)
 					nv = projection(veloc, diff);
@@ -212,7 +212,7 @@ void display() {
 
 
 					if (has1) {
-						vec2 close = closest(whichWall, player);
+					//	vec2 close = closest(whichWall, player);
 
 						vec2 diff = subtract(vec2{ whichWall.p1_x,whichWall.p1_y }, vec2{ whichWall.p0_x,whichWall.p0_y });
 					//	vec2 orth = perpendicular2(diff);
@@ -231,6 +231,28 @@ void display() {
 				
 				
 				}
+
+				if (concavity == CONCAVE) {
+				
+					vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
+					//vec2 orth = perpendicular2(diff);
+					vec2 nv = veloc;
+					if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(side1))) < STANDARD_EPSILON)
+						nv = projection(veloc, diff);
+				
+					vec2 diff2 = subtract(vec2{ wall2.p1_x,wall2.p1_y }, vec2{ wall2.p0_x,wall2.p0_y });
+					if (dotProduct(nv, vec2_itovec2(compassOppositeVec2_i(side2))) < STANDARD_EPSILON)
+						nv = projection(nv, diff2);
+
+
+					nnx = player.x + nv.x;
+					nnz = player.y + nv.y;
+
+
+
+				}
+
+
 			
 			
 			
