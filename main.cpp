@@ -238,14 +238,14 @@ void display() {
 
 
 
-					/*
+					
 					if (whichCase == 0) {
-						vec2 axis = perpendicular2(add(vec2_itovec2(compassOppositeVec2_i(side1)), vec2_itovec2(compassOppositeVec2_i(side2))));
+						vec2 axis = perpendicular2(subtract(player,getJunction(wall1,wall2)));
 						vec2 nv = projection(veloc, axis);
 						nnx = player.x + nv.x;
 						nnz = player.y + nv.y;
-						std::cout << "CONVEX" << std::endl;
-					}*/
+					
+					}
 
 					if (whichCase == 1) {
 						vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
