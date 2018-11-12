@@ -312,6 +312,60 @@ return;
 		return 0;
 	}
 
+
+
+
+	int get_line_intersection_special(segment2_flat wall,vec2 junction, vec2 player, vec2 veloc,float& i_x,float& i_y)
+	{
+		
+		vec2 nonJunction;
+		if (magnitude(subtract(junction, vec2{ wall.p0_x,wall.p0_y })) < 20)
+			nonJunction = vec2{ wall.p1_x,wall.p1_y };
+		if (magnitude(subtract(junction, vec2{ wall.p1_x,wall.p1_y })) < 20)
+			nonJunction = vec2{ wall.p0_x,wall.p0_y };
+		float p0_x = player.x;
+		float p0_y = player.y;
+		float p1_x = player.x + veloc.x;
+		float p1_y = player.y + veloc.y;
+
+		float p2_x = junction.x;
+		float p2_y = junction.y;
+		float p3_x = nonJunction.x;
+		float p3_y = nonJunction.y;
+
+	
+
+
+	
+		float goal1 = p0_x - p2_x;
+		float goal2 = p0_y - p2_y;
+
+		float topleft = p0_x - p1_x;
+		float bottomleft = p0_y - p1_y;
+		float topright = p3_x - p2_x;
+		float bottomright = p3_y - p2_y;
+
+		float det = topleft * bottomright - topright * bottomleft;
+		if (fabs(det) < STANDARD_EPSILON) {
+			return 0; //singular matrix no intersection
+
+		}
+
+		float u = (bottomright*goal1 - topright * goal2) / det;
+		float v = (topleft*goal2 - bottomleft * goal1) / det;
+		if (u >= 0 && v >= 0 ) {
+			i_x = p0_x - u * topleft;
+			i_y = p0_y - u * bottomleft;
+
+			return 1;
+		}
+
+
+
+		return 0;
+	}
+
+
 	mat3 multiplyTwoMat3s(mat3 a, mat3 b) {
 		return mat3{ a.entry11*b.entry11 + a.entry12*b.entry21 + a.entry13*b.entry31,a.entry11*b.entry12 + a.entry12*b.entry22 + a.entry13*b.entry32,a.entry11*b.entry13 + a.entry12*b.entry23 + a.entry13*b.entry33,a.entry21*b.entry11 + a.entry22*b.entry21 + a.entry23*b.entry31,a.entry21*b.entry12 + a.entry22*b.entry22 + a.entry23*b.entry32,a.entry21*b.entry13 + a.entry22*b.entry23 + a.entry23*b.entry33,a.entry31*b.entry11 + a.entry32*b.entry21 + a.entry33*b.entry31,a.entry31*b.entry12 + a.entry32*b.entry22 + a.entry33*b.entry32,a.entry31*b.entry13 + a.entry32*b.entry23 + a.entry33*b.entry33};
 	}

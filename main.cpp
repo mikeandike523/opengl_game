@@ -194,12 +194,13 @@ void display() {
 					float dist1;
 					float dist2;
 					vec2 normv = normalize(veloc);
-					if (get_line_intersection(wall1.p0_x, wall1.p0_y, wall1.p1_x, wall1.p1_y, player.x + normv.x * 350, player.y + normv.y * 350, player.x, player.y, ix1, iy1))
+					vec2 junction = getJunction(wall1, wall2);
+					if (get_line_intersection_special(wall1,junction,player,veloc,ix1,iy1))
 					{
 						has1 = true;
 					
 					}
-					if (get_line_intersection(wall2.p0_x, wall2.p0_y, wall2.p1_x, wall2.p1_y, player.x + normv.x * 350, player.y + normv.y * 350, player.x, player.y, ix2, iy2))
+					if (get_line_intersection_special(wall2, junction, player, veloc, ix2, iy2))
 					{
 						has2 = true;
 
