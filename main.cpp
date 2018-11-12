@@ -154,10 +154,10 @@ void display() {
 		
 		if (ct == 1) {
 		
-				vec2 close = closest(wall1, player);
+			//	vec2 close = closest(wall1, player);
 			
 				vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
-				vec2 orth = perpendicular2(diff);
+				//vec2 orth = perpendicular2(diff);
 				vec2 nv = veloc;
 				if(dotProduct(veloc,vec2_itovec2(compassOppositeVec2_i(side1)))<STANDARD_EPSILON)
 					nv=projection(veloc, diff);
@@ -170,10 +170,10 @@ void display() {
 		}
 		if (ct == 2) {
 			if (side1==side2) {
-				vec2 close = closest(wall1, player);
+			//	vec2 close = closest(wall1, player);
 			
 				vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
-				vec2 orth = perpendicular2(diff);
+				//vec2 orth = perpendicular2(diff);
 				vec2 nv = veloc;
 				if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(side1))) < STANDARD_EPSILON)
 					nv = projection(veloc, diff);
@@ -185,52 +185,155 @@ void display() {
 				int concavity = ConcaveOrConvexCorner(wall1, wall2, player);
 				if (concavity == CONVEX)
 				{
-					segment2_flat whichWall;
-					int whichSide;
-					int has1 = 0;
-					float ix1, iy1, ix2, iy2;
-					vec2 velocn = normalize(veloc);
-					if (get_line_intersection(wall1.p0_x, wall1.p0_y, wall1.p1_x, wall1.p1_y, player.x, player.y, player.x+velocn.x*WALL_BUFFER, player.y + velocn.y*WALL_BUFFER, ix1, iy1)) {
-						whichWall = wall1;
-						whichSide = side1;
-						has1 = 1;
+
+				
+					bool has1=false;
+					bool has2=false;
+					float ix1, ix2, iy1, iy2;
+					int whichCase = 0;
+					float dist1;
+					float dist2;
+					vec2 normv = normalize(veloc);
+					if (get_line_intersection(wall1.p0_x, wall1.p0_y, wall1.p1_x, wall1.p1_y, player.x + normv.x * 350, player.y + normv.y * 350, player.x, player.y, ix1, iy1))
+					{
+						has1 = true;
 					
 					}
-					
-					if (get_line_intersection(wall2.p0_x, wall2.p0_y, wall2.p1_x, wall2.p1_y, player.x + velocn.x*WALL_BUFFER, player.y + velocn.y*WALL_BUFFER, player.x, player.y, ix2, iy2)) {
-						if (!has1) {
-							has1 = 1;
-							whichWall = wall2;
-							whichSide = side2;
-						}
-						else if(sqrt(pow(player.x-ix1,2)+pow(player.y-iy1,2))<= sqrt(pow(player.x-ix2, 2) + pow(player.y-iy2, 2))){
-							whichWall = wall2;
-							whichSide = side2;
-						}
+					if (get_line_intersection(wall2.p0_x, wall2.p0_y, wall2.p1_x, wall2.p1_y, player.x + normv.x * 350, player.y + normv.y * 350, player.x, player.y, ix2, iy2))
+					{
+						has2 = true;
 
 					}
 
+					if (has1)
+						dist1 = magnitude(vec2{ix1-player.x,iy1-player.y});
+					if (has2)
+						dist2 = magnitude(vec2{ ix2 - player.x,iy2 - player.y });
 
-					if (has1) {
-						vec2 close = closest(whichWall, player);
 
-						vec2 diff = subtract(vec2{ whichWall.p1_x,whichWall.p1_y }, vec2{ whichWall.p0_x,whichWall.p0_y });
-					//	vec2 orth = perpendicular2(diff);
+					if (!has1&&!has2) {
+						whichCase = 0;
+					}
+					if (has1 && !has2)
+					{
+						whichCase = 1;
+
+					}
+					if (!has1 && has2)
+					{
+						whichCase = 2;
+					}
+					if (has1&&has2) {
+						if (dist1 == dist2) {
+							whichCase == 3;
+						}
+						if (dist1 < dist2) {
+							whichCase = 1;
+						}
+						if (dist1 > dist2) {
+							whichCase =2;
+						}
+
+					}
+
+
+
+					/*
+					if (whichCase == 0) {
+						vec2 axis = perpendicular2(add(vec2_itovec2(compassOppositeVec2_i(side1)), vec2_itovec2(compassOppositeVec2_i(side2))));
+						vec2 nv = projection(veloc, axis);
+						nnx = player.x + nv.x;
+						nnz = player.y + nv.y;
+						std::cout << "CONVEX" << std::endl;
+					}*/
+
+					if (whichCase == 1) {
+						vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
+						//vec2 orth = perpendicular2(diff);
 						vec2 nv = veloc;
-						if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(whichSide))) < STANDARD_EPSILON)
+						if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(side1))) < STANDARD_EPSILON)
 							nv = projection(veloc, diff);
 						nnx = player.x + nv.x;
 						nnz = player.y + nv.y;
-
 					}
-				
 
-
-
-
+					if (whichCase == 2) {
+						vec2 diff = subtract(vec2{ wall2.p1_x,wall2.p1_y }, vec2{ wall2.p0_x,wall2.p0_y });
+						//vec2 orth = perpendicular2(diff);
+						vec2 nv = veloc;
+						if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(side2))) < STANDARD_EPSILON)
+							nv = projection(veloc, diff);
+						nnx = player.x + nv.x;
+						nnz = player.y + nv.y;
+					}
+					if (whichCase == 3) {
+						
+						vec2 axis = add(vec2_itovec2(compassOppositeVec2_i(side1)), vec2_itovec2(compassOppositeVec2_i(side2)));
+						if (dotProduct(axis,veloc)>STANDARD_EPSILON) {
+							nnx = player.x + veloc.x;
+							nnz = player.y + veloc.y;
+						}
+					
+					}
 				
 				
 				}
+
+				if (concavity == CONCAVE) {
+				
+					vec2 nv = veloc;
+					vec2 axis1 = vec2_itovec2(compassOppositeVec2_i(side1));
+					
+					if (dotProduct(nv, axis1) < STANDARD_EPSILON)
+					{
+						switch (side1) {
+						case EAST:
+							nv.x = 0;
+							break;
+						case NORTH:
+							nv.y = 0;
+							break;
+						case WEST:
+							nv.x = 0;
+							break;
+						case SOUTH:
+							nv.y = 0;
+							break;
+
+						}
+					}
+
+
+					vec2 axis2 = vec2_itovec2(compassOppositeVec2_i(side2));
+
+					if (dotProduct(nv, axis2) < STANDARD_EPSILON)
+					{
+						switch (side2) {
+						case EAST:
+							nv.x = 0;
+							break;
+						case NORTH:
+							nv.y = 0;
+							break;
+						case WEST:
+							nv.x = 0;
+							break;
+						case SOUTH:
+							nv.y = 0;
+							break;
+
+						}
+					}
+
+
+					nnx = player.x + nv.x;
+					nnz = player.y + nv.y;
+
+
+
+				}
+
+
 			
 			
 			
@@ -249,14 +352,14 @@ void display() {
 	if (keyleftisdown)
 	{
 
-		defaultCamera.angleXZ += (float)9*M_2_PI*fElapsedTime;
+		defaultCamera.angleXZ += (float)2*M_PI*fElapsedTime;
 	}
 
 
 	if (keyrightisdown)
 	{
 
-		defaultCamera.angleXZ -= (float)9 * M_2_PI * fElapsedTime;
+		defaultCamera.angleXZ -=  (float)2 * M_PI* fElapsedTime;
 	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

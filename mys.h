@@ -4,12 +4,13 @@
 #include <freeglut/glut.h>  // GLUT, include glu.h and gl.h
 #include <vector>
 #include <iostream>
+#include <algorithm>
 namespace mys {
 
 
 
 	int ww, wh;
-	constexpr float STANDARD_EPSILON = 0.0005;
+	constexpr float STANDARD_EPSILON = 0.001;
 	constexpr float NEAR_PLANE = 5.0;
 	constexpr float FAR_PLANE = 1500;
 	constexpr float ONE_METER = 300;
@@ -19,7 +20,7 @@ namespace mys {
 	constexpr int SOUTH = 3;
 	constexpr int X_AXIS = 0;
 	constexpr int Y_AXIS = 1;
-	constexpr int CONCAVE = 1;
+	constexpr int CONCAVE = 0;
 	constexpr int CONVEX = 1;
 	
 	GLint ShaderProgram;
@@ -151,6 +152,27 @@ return;
 		float s = (target.x*base.x + target.y*base.y+target.z*base.z) / (base.x*base.x + base.y*base.y+base.z*base.z);
 		return vec3{ s*base.x,s*base.y ,s*base.z};
 	}
+	
+	float angle(vec2 v) {
+		
+		float val = atan2(v.y, v.x);
+		if (val < 0)
+			val += (float)2 * M_PI;
+	
+		return val;
+	}
+
+
+	float angleBetween(vec2 v1, vec2 v2) {
+		return acos((dotProduct(v1, v2)) / (magnitude(v1)*magnitude(v2)));
+	}
+	float angleBetween(vec3 v1, vec3 v2) {
+		return acos((dotProduct(v1, v2)) / (magnitude(v1)*magnitude(v2)));
+	}
+
+
+
+
 
 
 	//add vector projection if needed later
@@ -712,9 +734,110 @@ return;
 		return vec2{ (float)v.x,(float)v.y };
 	}
 	
+	vec2 fromFlatSegment2(const segment2_flat&wall, int whichPoint) {
+		if(whichPoint)
+			return vec2{ wall.p1_x,wall.p1_y };
+		return vec2{ wall.p0_x,wall.p0_y };
+	}
+
+	vec2 getJunction(segment2_flat wall1, segment2_flat wall2) {
+		//debug here
+		vec2 junction;
+		vec2 w1p0 = fromFlatSegment2(wall1, 0);
+
+		vec2 w1p1 = fromFlatSegment2(wall1, 1);
+		int ct = 0;
+
+		vec2 w2p0 = fromFlatSegment2(wall2, 0);
+		vec2 w2p1 = fromFlatSegment2(wall2, 1);
+		if (magnitude(subtract(w1p0, w2p0)) < 20)
+		{
+			junction = w1p0;
+		}
+
+		if (magnitude(subtract(w1p0, w2p1)) < 20)
+		{
+			junction = w1p0; 
+		}
+		if (magnitude(subtract(w1p1, w2p0)) < 20)
+		{
+			junction = w2p0; 
+		}
+		if (magnitude(subtract(w1p1, w2p1)) < 20)
+		{
+			junction = w1p1; 
+		}
+		return junction;
 	
+	}
+
+
 	int ConcaveOrConvexCorner(segment2_flat wall1, segment2_flat wall2, vec2 player) {
+
+		//debug here
+		vec2 junction, a, b;
+		vec2 w1p0 = fromFlatSegment2(wall1, 0);
+
+		vec2 w1p1= fromFlatSegment2(wall1, 1);
+		int ct=0;
+
+		vec2 w2p0 = fromFlatSegment2(wall2, 0);
+		vec2 w2p1 = fromFlatSegment2(wall2, 1);
+		if (magnitude(subtract(w1p0,w2p0)) < 20)
+		{
+			junction = w1p0; a = w1p1; b = w2p1;
+			ct++;
+		}
+
+		if (magnitude(subtract(w1p0, w2p1)) < 20)
+		{
+			junction = w1p0; a = w1p1; b = w2p0;
+			//std::cout << "a" << std::endl;
+			ct++;
+		}
+		if (magnitude(subtract(w1p1, w2p0)) <20)
+		{
+			junction = w2p0; a = w2p1; b = w1p0;
+			//std::cout << "b" << std::endl;
+			ct++;
+		}
+		if (magnitude(subtract(w1p1, w2p1)) < 20)
+		{
+			junction = w1p1; a = w1p0; b = w2p0;
+			ct++;
+		}
 		
+		vec2 ja = subtract(a, junction);
+		vec2 jb = subtract(b, junction);
+		vec2 jp = subtract(player, junction);
+
+		float angleJA =angle(ja);
+		//std::cout << angleJA << std::endl;
+		float angleJB = angle(jb);
+		//std::cout << angleJB << std::endl;
+		float angleJP = angle(jp);
+		//std::cout << angleJP << std::endl;
+
+
+		float max = std::max<float>( angleJA, angleJB );
+		float min = std::min<float>(angleJA, angleJB);
+
+	
+		if (abs(abs(max - min) - angleBetween(ja, jb)) < STANDARD_EPSILON) {
+		
+			if (angleJP <= max && angleJP >= min) {
+			
+				return CONCAVE;
+			}
+		}
+		else {
+			if (angleJP >= max ) {
+				
+				return CONCAVE;
+			}
+		}
+		
+	
 		return CONVEX;
 	
 	}
