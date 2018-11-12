@@ -185,8 +185,96 @@ void display() {
 				int concavity = ConcaveOrConvexCorner(wall1, wall2, player);
 				if (concavity == CONVEX)
 				{
+
 				
-			
+					bool has1=false;
+					bool has2=false;
+					float ix1, ix2, iy1, iy2;
+					int whichCase = 0;
+					float dist1;
+					float dist2;
+					vec2 normv = normalize(veloc);
+					if (get_line_intersection(wall1.p0_x, wall1.p0_y, wall1.p1_x, wall1.p1_y, player.x + normv.x * 350, player.y + normv.y * 350, player.x, player.y, ix1, iy1))
+					{
+						has1 = true;
+					
+					}
+					if (get_line_intersection(wall2.p0_x, wall2.p0_y, wall2.p1_x, wall2.p1_y, player.x + normv.x * 350, player.y + normv.y * 350, player.x, player.y, ix2, iy2))
+					{
+						has2 = true;
+
+					}
+
+					if (has1)
+						dist1 = magnitude(vec2{ix1-player.x,iy1-player.y});
+					if (has2)
+						dist2 = magnitude(vec2{ ix2 - player.x,iy2 - player.y });
+
+
+					if (!has1&&!has2) {
+						whichCase = 0;
+					}
+					if (has1 && !has2)
+					{
+						whichCase = 1;
+
+					}
+					if (!has1 && has2)
+					{
+						whichCase = 2;
+					}
+					if (has1&&has2) {
+						if (dist1 == dist2) {
+							whichCase == 3;
+						}
+						if (dist1 < dist2) {
+							whichCase = 1;
+						}
+						if (dist1 > dist2) {
+							whichCase =2;
+						}
+
+					}
+
+
+
+					/*
+					if (whichCase == 0) {
+						vec2 axis = perpendicular2(add(vec2_itovec2(compassOppositeVec2_i(side1)), vec2_itovec2(compassOppositeVec2_i(side2))));
+						vec2 nv = projection(veloc, axis);
+						nnx = player.x + nv.x;
+						nnz = player.y + nv.y;
+						std::cout << "CONVEX" << std::endl;
+					}*/
+
+					if (whichCase == 1) {
+						vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
+						//vec2 orth = perpendicular2(diff);
+						vec2 nv = veloc;
+						if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(side1))) < STANDARD_EPSILON)
+							nv = projection(veloc, diff);
+						nnx = player.x + nv.x;
+						nnz = player.y + nv.y;
+					}
+
+					if (whichCase == 2) {
+						vec2 diff = subtract(vec2{ wall2.p1_x,wall2.p1_y }, vec2{ wall2.p0_x,wall2.p0_y });
+						//vec2 orth = perpendicular2(diff);
+						vec2 nv = veloc;
+						if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(side2))) < STANDARD_EPSILON)
+							nv = projection(veloc, diff);
+						nnx = player.x + nv.x;
+						nnz = player.y + nv.y;
+					}
+					if (whichCase == 3) {
+						
+						vec2 axis = add(vec2_itovec2(compassOppositeVec2_i(side1)), vec2_itovec2(compassOppositeVec2_i(side2)));
+						if (dotProduct(axis,veloc)>STANDARD_EPSILON) {
+							nnx = player.x + veloc.x;
+							nnz = player.y + veloc.y;
+						}
+					
+					}
 				
 				
 				}

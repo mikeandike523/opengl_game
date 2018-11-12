@@ -740,6 +740,38 @@ return;
 		return vec2{ wall.p0_x,wall.p0_y };
 	}
 
+	vec2 getJunction(segment2_flat wall1, segment2_flat wall2) {
+		//debug here
+		vec2 junction;
+		vec2 w1p0 = fromFlatSegment2(wall1, 0);
+
+		vec2 w1p1 = fromFlatSegment2(wall1, 1);
+		int ct = 0;
+
+		vec2 w2p0 = fromFlatSegment2(wall2, 0);
+		vec2 w2p1 = fromFlatSegment2(wall2, 1);
+		if (magnitude(subtract(w1p0, w2p0)) < 20)
+		{
+			junction = w1p0;
+		}
+
+		if (magnitude(subtract(w1p0, w2p1)) < 20)
+		{
+			junction = w1p0; 
+		}
+		if (magnitude(subtract(w1p1, w2p0)) < 20)
+		{
+			junction = w2p0; 
+		}
+		if (magnitude(subtract(w1p1, w2p1)) < 20)
+		{
+			junction = w1p1; 
+		}
+		return junction;
+	
+	}
+
+
 	int ConcaveOrConvexCorner(segment2_flat wall1, segment2_flat wall2, vec2 player) {
 
 		//debug here
