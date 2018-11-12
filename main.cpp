@@ -13,7 +13,7 @@ std::vector<mys::segment2_flat> walls;
 std::vector<int> wallDirs;
 
 
-constexpr float WALL_BUFFER = 30;
+constexpr float WALL_BUFFER = 20;
 
 inline void gen_wall(int x, int z, int side) {
 	//vec2_i offs = compassToVec2_i(side);
