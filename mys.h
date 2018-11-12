@@ -10,7 +10,7 @@ namespace mys {
 
 
 	int ww, wh;
-	constexpr float STANDARD_EPSILON = 0.0005;
+	constexpr float STANDARD_EPSILON = 0.001;
 	constexpr float NEAR_PLANE = 5.0;
 	constexpr float FAR_PLANE = 1500;
 	constexpr float ONE_METER = 300;
@@ -152,6 +152,27 @@ return;
 		float s = (target.x*base.x + target.y*base.y+target.z*base.z) / (base.x*base.x + base.y*base.y+base.z*base.z);
 		return vec3{ s*base.x,s*base.y ,s*base.z};
 	}
+	
+	float angle(vec2 v) {
+		
+		float val = atan2(v.y, v.x);
+		if (val < 0)
+			val += (float)2 * M_PI;
+	
+		return val;
+	}
+
+
+	float angleBetween(vec2 v1, vec2 v2) {
+		return acos((dotProduct(v1, v2)) / (magnitude(v1)*magnitude(v2)));
+	}
+	float angleBetween(vec3 v1, vec3 v2) {
+		return acos((dotProduct(v1, v2)) / (magnitude(v1)*magnitude(v2)));
+	}
+
+
+
+
 
 
 	//add vector projection if needed later
@@ -726,48 +747,65 @@ return;
 		vec2 w1p0 = fromFlatSegment2(wall1, 0);
 
 		vec2 w1p1= fromFlatSegment2(wall1, 1);
-
+		int ct=0;
 
 		vec2 w2p0 = fromFlatSegment2(wall2, 0);
 		vec2 w2p1 = fromFlatSegment2(wall2, 1);
 		if (magnitude(subtract(w1p0,w2p0)) < 20)
 		{
 			junction = w1p0; a = w1p1; b = w2p1;
-
+			ct++;
 		}
 
 		if (magnitude(subtract(w1p0, w2p1)) < 20)
 		{
 			junction = w1p0; a = w1p1; b = w2p0;
-
+			//std::cout << "a" << std::endl;
+			ct++;
 		}
 		if (magnitude(subtract(w1p1, w2p0)) <20)
 		{
 			junction = w2p0; a = w2p1; b = w1p0;
-
+			//std::cout << "b" << std::endl;
+			ct++;
 		}
 		if (magnitude(subtract(w1p1, w2p1)) < 20)
 		{
 			junction = w1p1; a = w1p0; b = w2p0;
-
+			ct++;
 		}
+		
 		vec2 ja = subtract(a, junction);
 		vec2 jb = subtract(b, junction);
 		vec2 jp = subtract(player, junction);
 
-		float angleJA = atan2(ja.y, ja.x);
-		float angleJB = atan2(jb.y, jb.x);
-		float angleJP = atan2(jp.y, jp.x);
+		float angleJA =angle(ja);
+		//std::cout << angleJA << std::endl;
+		float angleJB = angle(jb);
+		//std::cout << angleJB << std::endl;
+		float angleJP = angle(jp);
+		//std::cout << angleJP << std::endl;
+
 
 		float max = std::max<float>( angleJA, angleJB );
 		float min = std::min<float>(angleJA, angleJB);
 
-		if (angleJP <max && angleJP > min) {
-			std::cout << "concave" << std::endl;
-			return CONCAVE;
+	
+		if (abs(abs(max - min) - angleBetween(ja, jb)) < STANDARD_EPSILON) {
+		
+			if (angleJP <= max && angleJP >= min) {
+			
+				return CONCAVE;
+			}
+		}
+		else {
+			if (angleJP >= max ) {
+				
+				return CONCAVE;
+			}
 		}
 		
-		std::cout << "convex" << std::endl;
+	
 		return CONVEX;
 	
 	}

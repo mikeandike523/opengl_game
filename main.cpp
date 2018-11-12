@@ -186,49 +186,7 @@ void display() {
 				if (concavity == CONVEX)
 				{
 				
-					segment2_flat whichWall;
-					int whichSide;
-					int has1 = 0;
-					float ix1, iy1, ix2, iy2;
-					vec2 velocn = normalize(veloc);
-					if (get_line_intersection(wall1.p0_x, wall1.p0_y, wall1.p1_x, wall1.p1_y, player.x, player.y, player.x+velocn.x*WALL_BUFFER*1.2, player.y + velocn.y*WALL_BUFFER*1.2, ix1, iy1)) {
-						whichWall = wall1;
-						whichSide = side1;
-						has1 = 1;
-					
-					}
-					
-					if (get_line_intersection(wall2.p0_x, wall2.p0_y, wall2.p1_x, wall2.p1_y, player.x + velocn.x*WALL_BUFFER*1.2, player.y + velocn.y*WALL_BUFFER*1.2, player.x, player.y, ix2, iy2)) {
-						if (!has1) {
-							has1 = 1;
-							whichWall = wall2;
-							whichSide = side2;
-						}
-						else if(sqrt(pow(player.x-ix1,2)+pow(player.y-iy1,2))<= sqrt(pow(player.x-ix2, 2) + pow(player.y-iy2, 2))){
-							whichWall = wall2;
-							whichSide = side2;
-						}
-
-					}
-
-
-					if (has1) {
-					//	vec2 close = closest(whichWall, player);
-
-						vec2 diff = subtract(vec2{ whichWall.p1_x,whichWall.p1_y }, vec2{ whichWall.p0_x,whichWall.p0_y });
-					//	vec2 orth = perpendicular2(diff);
-						vec2 nv = veloc;
-						if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(whichSide))) < STANDARD_EPSILON)
-							nv = projection(veloc, diff);
-						nnx = player.x + nv.x;
-						nnz = player.y + nv.y;
-
-					}
-				
-
-
-
-
+			
 				
 				
 				}
@@ -236,11 +194,49 @@ void display() {
 				if (concavity == CONCAVE) {
 				
 					vec2 nv = veloc;
-					vec2 axis = add(vec2_itovec2(compassOppositeVec2_i(side1)), vec2_itovec2(compassOppositeVec2_i(side2)));
-					if (dotProduct(nv, axis) < STANDARD_EPSILON)
-						nv = vec2{ 0,0 };
+					vec2 axis1 = vec2_itovec2(compassOppositeVec2_i(side1));
+					
+					if (dotProduct(nv, axis1) < STANDARD_EPSILON)
+					{
+						switch (side1) {
+						case EAST:
+							nv.x = 0;
+							break;
+						case NORTH:
+							nv.y = 0;
+							break;
+						case WEST:
+							nv.x = 0;
+							break;
+						case SOUTH:
+							nv.y = 0;
+							break;
 
-				
+						}
+					}
+
+
+					vec2 axis2 = vec2_itovec2(compassOppositeVec2_i(side2));
+
+					if (dotProduct(nv, axis2) < STANDARD_EPSILON)
+					{
+						switch (side2) {
+						case EAST:
+							nv.x = 0;
+							break;
+						case NORTH:
+							nv.y = 0;
+							break;
+						case WEST:
+							nv.x = 0;
+							break;
+						case SOUTH:
+							nv.y = 0;
+							break;
+
+						}
+					}
+
 
 					nnx = player.x + nv.x;
 					nnz = player.y + nv.y;
@@ -268,14 +264,14 @@ void display() {
 	if (keyleftisdown)
 	{
 
-		defaultCamera.angleXZ += (float)9*M_2_PI*fElapsedTime;
+		defaultCamera.angleXZ += (float)2*M_PI*fElapsedTime;
 	}
 
 
 	if (keyrightisdown)
 	{
 
-		defaultCamera.angleXZ -= (float)9 * M_2_PI * fElapsedTime;
+		defaultCamera.angleXZ -=  (float)2 * M_PI* fElapsedTime;
 	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
