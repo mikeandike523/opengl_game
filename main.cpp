@@ -242,9 +242,12 @@ void display() {
 					
 					if (whichCase == 0) {
 						
+						vec2 diff = add(vec2_itovec2(compassOppositeVec2_i(side1)), vec2_itovec2(compassOppositeVec2_i(side2)));
+						vec2 axis = perpendicular2(diff);
 					
-						vec2 axis = perpendicular2(add(vec2_itovec2(compassOppositeVec2_i(side1)), vec2_itovec2(compassOppositeVec2_i(side2))));
-						vec2 nv = projection(veloc, axis);
+						vec2 nv = veloc;
+						if(dotProduct(veloc,diff)<STANDARD_EPSILON)
+							nv=projection(veloc, axis);
 						
 						nnx = player.x + nv.x;
 						nnz = player.y + nv.y;
