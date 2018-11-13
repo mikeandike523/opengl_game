@@ -14,13 +14,14 @@ std::vector<int> wallDirs;
 
 
 constexpr float WALL_BUFFER = 30;
+constexpr float CORNER_BUFFER = 5;
 
 inline void gen_wall(int x, int z, int side) {
 	//vec2_i offs = compassToVec2_i(side);
 
 	if (side == EAST) {
 		float p0_x = (float)(x * 300 + 150);
-		float p0_y = (float)(z * 300 +150);
+		float p0_y = (float)(z * 300 + 150);
 		float p1_x = (float)(x * 300 + 150);
 		float p1_y = (float)(z * 300 + -150);
 		walls.push_back(segment2_flat{ p0_x,p0_y,p1_x,p1_y });
@@ -51,7 +52,7 @@ inline void gen_wall(int x, int z, int side) {
 	}
 
 
-	
+
 	wallDirs.push_back(side);
 }
 
@@ -92,34 +93,34 @@ void display() {
 	current_ticks = glutGet(GLUT_ELAPSED_TIME);
 	bool moving = false;
 	float nx = defaultCamera.position.x;
-		float nz=defaultCamera.position.z;
-		
+	float nz = defaultCamera.position.z;
+
 	if (keyaisdown)
 	{
 		moving = true;
 
-		nx+= cos(defaultCamera.angleXZ + M_PI_2) * 600* fElapsedTime;
-		nz+= sin(defaultCamera.angleXZ + M_PI_2) * 600 * fElapsedTime;
+		nx += cos(defaultCamera.angleXZ + M_PI_2) * 600 * fElapsedTime;
+		nz += sin(defaultCamera.angleXZ + M_PI_2) * 600 * fElapsedTime;
 	}
 	if (keydisdown)
 	{
 		moving = true;
-		nx+= cos(defaultCamera.angleXZ - M_PI_2) * 600* fElapsedTime;
-		nz+=sin(defaultCamera.angleXZ - M_PI_2) * 600* fElapsedTime;
+		nx += cos(defaultCamera.angleXZ - M_PI_2) * 600 * fElapsedTime;
+		nz += sin(defaultCamera.angleXZ - M_PI_2) * 600 * fElapsedTime;
 	}
 
 	if (keywisdown)
 	{
 		moving = true;
-		nx+= cos(defaultCamera.angleXZ) * 600* fElapsedTime;
-		nz+=sin(defaultCamera.angleXZ) * 600* fElapsedTime;
+		nx += cos(defaultCamera.angleXZ) * 600 * fElapsedTime;
+		nz += sin(defaultCamera.angleXZ) * 600 * fElapsedTime;
 	}
 
 	if (keysisdown)
 	{
 		moving = true;
-		nx+=- cos(defaultCamera.angleXZ) * 600* fElapsedTime;
-		nz+= - sin(defaultCamera.angleXZ) * 600* fElapsedTime;
+		nx += -cos(defaultCamera.angleXZ) * 600 * fElapsedTime;
+		nz += -sin(defaultCamera.angleXZ) * 600 * fElapsedTime;
 	}
 	if (moving) {
 		float nnx = nx;
@@ -151,27 +152,27 @@ void display() {
 
 
 		}
-		
+
 		if (ct == 1) {
-		
+
 			//	vec2 close = closest(wall1, player);
-			
-				vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
-				//vec2 orth = perpendicular2(diff);
-				vec2 nv = veloc;
-				if(dotProduct(veloc,vec2_itovec2(compassOppositeVec2_i(side1)))<STANDARD_EPSILON)
-					nv=projection(veloc, diff);
-				nnx = player.x + nv.x;
-				nnz = player.y + nv.y;
+
+			vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
+			//vec2 orth = perpendicular2(diff);
+			vec2 nv = veloc;
+			if (dotProduct(veloc, vec2_itovec2(compassOppositeVec2_i(side1))) < STANDARD_EPSILON)
+				nv = projection(veloc, diff);
+			nnx = player.x + nv.x;
+			nnz = player.y + nv.y;
 
 
 
-		
+
 		}
 		if (ct == 2) {
-			if (side1==side2) {
-			//	vec2 close = closest(wall1, player);
-			
+			if (side1 == side2) {
+				//	vec2 close = closest(wall1, player);
+
 				vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
 				//vec2 orth = perpendicular2(diff);
 				vec2 nv = veloc;
@@ -186,19 +187,19 @@ void display() {
 				if (concavity == CONVEX)
 				{
 
-				
-					bool has1=false;
-					bool has2=false;
+
+					bool has1 = false;
+					bool has2 = false;
 					float ix1, ix2, iy1, iy2;
 					int whichCase = 0;
 					float dist1;
 					float dist2;
 					vec2 normv = normalize(veloc);
 					vec2 junction = getJunction(wall1, wall2);
-					if (get_line_intersection_special(wall1,junction,player,veloc,ix1,iy1))
+					if (get_line_intersection_special(wall1, junction, player, veloc, ix1, iy1))
 					{
 						has1 = true;
-					
+
 					}
 					if (get_line_intersection_special(wall2, junction, player, veloc, ix2, iy2))
 					{
@@ -207,12 +208,12 @@ void display() {
 					}
 
 					if (has1)
-						dist1 = magnitude(vec2{ix1-player.x,iy1-player.y});
+						dist1 = magnitude(vec2{ ix1 - player.x,iy1 - player.y });
 					if (has2)
 						dist2 = magnitude(vec2{ ix2 - player.x,iy2 - player.y });
 
 
-					if (!has1&&!has2) {
+					if (!has1 && !has2) {
 						whichCase = 0;
 					}
 					if (has1 && !has2)
@@ -232,26 +233,110 @@ void display() {
 							whichCase = 1;
 						}
 						if (dist1 > dist2) {
-							whichCase =2;
+							whichCase = 2;
 						}
 
 					}
 
 
 
-					
+
 					if (whichCase == 0) {
 						
-						vec2 diff = add(vec2_itovec2(compassOppositeVec2_i(side1)), vec2_itovec2(compassOppositeVec2_i(side2)));
-						vec2 axis = perpendicular2(diff);
-					
 						vec2 nv = veloc;
-						if(dotProduct(veloc,diff)<STANDARD_EPSILON)
-							nv=projection(veloc, axis);
+						bool tc1 = false;
+						bool tc2 = false;
+
+						segment2_flat vert;
+						segment2_flat horiz;
+						int whichvert = 1;
+						if (side1==EAST||side1==WEST)
+						{	
+							whichvert = 1;
+							horiz = wall2;
+							vert = wall1;
 						
+						}
+
+
+						if (side2 == EAST || side2 == WEST)
+						{
+							whichvert = 2;
+							horiz = wall1;
+							vert = wall2;
+
+						}
+
+					
+
+						if (abs(player.y-horiz.p0_y)<CORNER_BUFFER) {
+							if(whichvert==2)
+							tc2 = true;
+							if (whichvert == 1)
+								tc1 = true;
+
+
+						}
+
+
+						if (abs(player.x - vert.p0_x) < CORNER_BUFFER) {
+							if (whichvert == 2)
+								tc1 = true;
+							if (whichvert == 1)
+								tc2 = true;
+
+						}
+
+
+
+						vec2 axis1 = vec2_itovec2(compassOppositeVec2_i(side1));
+						if(tc1)
+						if (dotProduct(nv, axis1) < STANDARD_EPSILON)
+						{
+							switch (side1) {
+							case EAST:
+								nv.x = 0;
+								break;
+							case NORTH:
+								nv.y = 0;
+								break;
+							case WEST:
+								nv.x = 0;
+								break;
+							case SOUTH:
+								nv.y = 0;
+								break;
+
+							}
+						}
+
+
+						vec2 axis2 = vec2_itovec2(compassOppositeVec2_i(side2));
+						if(tc2)
+						if (dotProduct(nv, axis2) < STANDARD_EPSILON)
+						{
+							switch (side2) {
+							case EAST:
+								nv.x = 0;
+								break;
+							case NORTH:
+								nv.y = 0;
+								break;
+							case WEST:
+								nv.x = 0;
+								break;
+							case SOUTH:
+								nv.y = 0;
+								break;
+
+							}
+						}
+
+
 						nnx = player.x + nv.x;
 						nnz = player.y + nv.y;
-					
+
+						
 					}
 
 					if (whichCase == 1) {
@@ -274,23 +359,23 @@ void display() {
 						nnz = player.y + nv.y;
 					}
 					if (whichCase == 3) {
-						
+
 						vec2 axis = add(vec2_itovec2(compassOppositeVec2_i(side1)), vec2_itovec2(compassOppositeVec2_i(side2)));
-						if (dotProduct(axis,veloc)>STANDARD_EPSILON) {
+						if (dotProduct(axis, veloc) > STANDARD_EPSILON) {
 							nnx = player.x + veloc.x;
 							nnz = player.y + veloc.y;
 						}
-					
+
 					}
-				
-				
+
+
 				}
 
 				if (concavity == CONCAVE) {
-				
+
 					vec2 nv = veloc;
 					vec2 axis1 = vec2_itovec2(compassOppositeVec2_i(side1));
-					
+
 					if (dotProduct(nv, axis1) < STANDARD_EPSILON)
 					{
 						switch (side1) {
@@ -341,9 +426,9 @@ void display() {
 				}
 
 
-			
-			
-			
+
+
+
 			}
 		}
 		defaultCamera.position.x = nnx;
@@ -359,14 +444,14 @@ void display() {
 	if (keyleftisdown)
 	{
 
-		defaultCamera.angleXZ += (float)2*M_PI*fElapsedTime;
+		defaultCamera.angleXZ += (float)2 * M_PI*fElapsedTime;
 	}
 
 
 	if (keyrightisdown)
 	{
 
-		defaultCamera.angleXZ -=  (float)2 * M_PI* fElapsedTime;
+		defaultCamera.angleXZ -= (float)2 * M_PI* fElapsedTime;
 	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -401,7 +486,7 @@ void display() {
 
 	glutSwapBuffers();  // Swap front and back buffers (of double buffered mode)
 
-	delta_ticks = glutGet(GLUT_ELAPSED_TIME)- current_ticks; //the time, in ms, that took to render the scene
+	delta_ticks = glutGet(GLUT_ELAPSED_TIME) - current_ticks; //the time, in ms, that took to render the scene
 	if (delta_ticks > 0)
 		fElapsedTime = (float)delta_ticks / (float)1000;
 
@@ -567,7 +652,7 @@ int main(int argc, char** argv) {
 	const int roomRad = 15;
 	std::vector<mys::vec2_i> roomList;
 	mazegen::push_maze(roomRad, roomList);
-	int rooms[(roomRad*2+1)*(roomRad*2+1)];
+	int rooms[(roomRad * 2 + 1)*(roomRad * 2 + 1)];
 	for (int i = 0;i < roomRad*roomRad;i++) {
 		rooms[i] = 1;
 	}
@@ -579,7 +664,7 @@ int main(int argc, char** argv) {
 		vec2_i rmloc = roomList[i];
 
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 - 150)} });
-		StaticTriangleColors.push_back(vec3{0,0,1});
+		StaticTriangleColors.push_back(vec3{ 0,0,1 });
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 		StaticTriangleColors.push_back(vec3{ 0,0,1 });
 
@@ -589,17 +674,17 @@ int main(int argc, char** argv) {
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + -150),(float)50,(float)(rmloc.y * 300 - 150)} });
 		StaticTriangleColors.push_back(vec3{ 0,1,0 });
 
-		if (abs(roomOccupation(vec2_i{ rmloc.x + 1,rmloc.y }, roomRad, rooms) == 1) ){
-		
-			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300+150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300+150),(float)50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300+150),(float)-50,(float)(rmloc.y * 300 -150)} });
-				StaticTriangleColors.push_back(vec3{ 1,0, 0});
-				
+		if (abs(roomOccupation(vec2_i{ rmloc.x + 1,rmloc.y }, roomRad, rooms) == 1)) {
+
+			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)} });
+			StaticTriangleColors.push_back(vec3{ 1,0, 0 });
 
 
-				StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)} });
-				StaticTriangleColors.push_back(vec3{ 1,0, 0 });
-				gen_wall(rmloc.x, rmloc.y, EAST);
-					
+
+			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)} });
+			StaticTriangleColors.push_back(vec3{ 1,0, 0 });
+			gen_wall(rmloc.x, rmloc.y, EAST);
+
 		}
 
 
@@ -617,7 +702,7 @@ int main(int argc, char** argv) {
 
 		}
 
-		if (abs(roomOccupation(vec2_i{ rmloc.x ,rmloc.y+1 }, roomRad, rooms) == 1)) {
+		if (abs(roomOccupation(vec2_i{ rmloc.x ,rmloc.y + 1 }, roomRad, rooms) == 1)) {
 
 			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 - 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 - 150),(float)-50,(float)(rmloc.y * 300 + 150)} });
 			StaticTriangleColors.push_back(vec3{ 0.5,0.5, 0.8 });
@@ -627,7 +712,7 @@ int main(int argc, char** argv) {
 			StaticTriangleColors.push_back(vec3{ 0.5,0.5, 0.8 });
 
 			gen_wall(rmloc.x, rmloc.y, NORTH);
-	
+
 		}
 		if (abs(roomOccupation(vec2_i{ rmloc.x ,rmloc.y - 1 }, roomRad, rooms) == 1)) {
 
@@ -649,17 +734,17 @@ int main(int argc, char** argv) {
 	int ri = rand() % roomList.size();
 	defaultCamera.position.x = (float)(roomList[ri].x) * (float)300;
 	defaultCamera.position.z = (float)(roomList[ri].y) * (float)300;
-	
-	vec2_i dirs[] = { vec2_i{1,0},vec2_i{0,1},vec2_i{-1,0},vec2_i{0,-1}};
-	int  randNum = rand()%4;
-	while (roomOccupation(vec2_i{roomList[ri].x+dirs[randNum].x,roomList[ri].y + dirs[randNum].y },roomRad,rooms) != 0) {
+
+	vec2_i dirs[] = { vec2_i{1,0},vec2_i{0,1},vec2_i{-1,0},vec2_i{0,-1} };
+	int  randNum = rand() % 4;
+	while (roomOccupation(vec2_i{ roomList[ri].x + dirs[randNum].x,roomList[ri].y + dirs[randNum].y }, roomRad, rooms) != 0) {
 		randNum = rand() % 4;
 	}
 	switch (randNum) {
 	case 0: defaultCamera.angleXZ = (float)0; break;
 	case 1: defaultCamera.angleXZ = M_PI_2; break;
 	case 2:defaultCamera.angleXZ = M_PI;  break;
-	case 3:defaultCamera.angleXZ = (float)3*M_PI_2; break;
+	case 3:defaultCamera.angleXZ = (float)3 * M_PI_2; break;
 	}
 
 
@@ -725,6 +810,6 @@ int main(int argc, char** argv) {
 	glutIgnoreKeyRepeat(1);
 	initGL();                     // Our own OpenGL initialization
 	glutMainLoop();               // Enter event-processing loop
-	
+
 	return 0;
 }
