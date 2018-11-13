@@ -360,12 +360,8 @@ void display() {
 					}
 					if (whichCase == 3) {
 
-						vec2 axis =subtract(player,junction);
-						if (dotProduct(axis, veloc) > STANDARD_EPSILON) {
-							nnx = player.x + veloc.x;
-							nnz = player.y + veloc.y;
-						}
-					
+						nnx = player.x;
+						nnz = player.y;
 
 					}
 
