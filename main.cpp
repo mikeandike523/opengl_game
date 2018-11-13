@@ -360,11 +360,12 @@ void display() {
 					}
 					if (whichCase == 3) {
 
-						vec2 axis = add(vec2_itovec2(compassOppositeVec2_i(side1)), vec2_itovec2(compassOppositeVec2_i(side2)));
+						vec2 axis =subtract(player,junction);
 						if (dotProduct(axis, veloc) > STANDARD_EPSILON) {
 							nnx = player.x + veloc.x;
 							nnz = player.y + veloc.y;
 						}
+					
 
 					}
 
