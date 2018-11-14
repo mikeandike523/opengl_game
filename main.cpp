@@ -243,98 +243,11 @@ void display() {
 
 					if (whichCase == 0) {
 						
-						vec2 nv = veloc;
-						bool tc1 = false;
-						bool tc2 = false;
-
-						segment2_flat vert;
-						segment2_flat horiz;
-						int whichvert = 1;
-						if (side1==EAST||side1==WEST)
-						{	
-							whichvert = 1;
-							horiz = wall2;
-							vert = wall1;
 						
-						}
-
-
-						if (side2 == EAST || side2 == WEST)
-						{
-							whichvert = 2;
-							horiz = wall1;
-							vert = wall2;
-
-						}
-
 					
 
-						if (abs(player.y-horiz.p0_y)<CORNER_BUFFER) {
-							if(whichvert==2)
-							tc2 = true;
-							if (whichvert == 1)
-								tc1 = true;
-
-
-						}
-
-
-						if (abs(player.x - vert.p0_x) < CORNER_BUFFER) {
-							if (whichvert == 2)
-								tc1 = true;
-							if (whichvert == 1)
-								tc2 = true;
-
-						}
-
-
-
-						vec2 axis1 = vec2_itovec2(compassOppositeVec2_i(side1));
-						if(tc1)
-						if (dotProduct(nv, axis1) < STANDARD_EPSILON)
-						{
-							switch (side1) {
-							case EAST:
-								nv.x = 0;
-								break;
-							case NORTH:
-								nv.y = 0;
-								break;
-							case WEST:
-								nv.x = 0;
-								break;
-							case SOUTH:
-								nv.y = 0;
-								break;
-
-							}
-						}
-
-
-						vec2 axis2 = vec2_itovec2(compassOppositeVec2_i(side2));
-						if(tc2)
-						if (dotProduct(nv, axis2) < STANDARD_EPSILON)
-						{
-							switch (side2) {
-							case EAST:
-								nv.x = 0;
-								break;
-							case NORTH:
-								nv.y = 0;
-								break;
-							case WEST:
-								nv.x = 0;
-								break;
-							case SOUTH:
-								nv.y = 0;
-								break;
-
-							}
-						}
-
-
-						nnx = player.x + nv.x;
-						nnz = player.y + nv.y;
+						nnx = player.x + veloc.x;
+						nnz = player.y + veloc.y;
 
 						
 					}
@@ -359,9 +272,7 @@ void display() {
 						nnz = player.y + nv.y;
 					}
 					if (whichCase == 3) {
-
-						nnx = player.x;
-						nnz = player.y;
+						
 
 					}
 
