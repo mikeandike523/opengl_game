@@ -273,6 +273,8 @@ void display() {
 					}
 					if (whichCase == 3) {
 						
+						nnx = player.x + veloc.x;
+						nnz = player.y + veloc.y;
 
 					}
 
