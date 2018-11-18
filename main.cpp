@@ -570,7 +570,7 @@ int main(int argc, char** argv) {
 	for (int i = 0;i < roomList.size();i++) {
 		setRoomOpen(roomList[i], roomRad, rooms);
 	}
-	/*
+	
 	for (int i = 0;i < roomList.size();i++) {
 		vec2_i rmloc = roomList[i];
 		
@@ -642,8 +642,8 @@ int main(int argc, char** argv) {
 
 
 	}
-	*/
-	/*
+	
+	
 	int ri = rand() % roomList.size();
 	defaultCamera.position.x = (float)(roomList[ri].x) * (float)300;
 	defaultCamera.position.z = (float)(roomList[ri].y) * (float)300;
@@ -659,9 +659,10 @@ int main(int argc, char** argv) {
 	case 2:defaultCamera.angleXZ = M_PI;  break;
 	case 3:defaultCamera.angleXZ = (float)3 * M_PI_2; break;
 	}
-	defaultCamera.angleZY = -M_PI_2 /2;
-	defaultCamera.position.y = 150;
-	*/
+	//defaultCamera.angleZY = M_PI_2 /7;
+	//defaultCamera.position.y = 150;
+	
+	/*
 	StaticTriangles.push_back(triangle3{ vec3{-200,-50,-200},vec3{200,-50,-200},vec3{-100,50,-100} });
 	StaticTriangleColors.push_back(vec3{1,0,1});
 	StaticTriangles.push_back(triangle3{ vec3{100,50,-100},vec3{200,-50,-200},vec3{-100,50,-100} });
@@ -684,7 +685,7 @@ int main(int argc, char** argv) {
 	StaticTriangles.push_back(triangle3{ vec3{200,-50,200},vec3{100,50,100},vec3{100,50,-100} });
 	StaticTriangleColors.push_back(vec3{ 0.8,0.7,0.7 });
 
-
+	*/
 
 	
 	glutInit(&argc, argv);            // Initialize GLUT

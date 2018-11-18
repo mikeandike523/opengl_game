@@ -41,7 +41,7 @@ void main()
 }
 
 )";
-
+	//credit https://stackoverflow.com/a/53349063/5166365 for helping me fix this
 	const char* fragment_shader = R"(
 #version 430 core
 uniform vec3 colRGB;
