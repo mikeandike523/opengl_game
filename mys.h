@@ -24,6 +24,7 @@ namespace mys {
 	constexpr int CONVEX = 1;
 	
 	GLint ShaderProgram;
+	GLint scp;
 	const char* vertex_shader = R"(
 
 
@@ -57,12 +58,17 @@ float far = 1500;
 
 void main()
 {
-float cx = float((gl_FragCoord.x-w/2))*right*float(2)/float(w);
-	float cy = float((h / 2 - gl_FragCoord.y))*top*float(2)/float(h);
+float cx =(-1.0+2.0*gl_FragCoord.x/w)*right;
+	float cy = (-1.0+2.0*gl_FragCoord.y/h)*top;
 	cx /= focalDistance;
 	cy /= focalDistance;
 	vec3 dirvec = vec3( cx,cy,1 );
 	float t = dot(normal, origin) / dot(normal,dirvec);
+if(abs(dot(normal,dirvec))<5){
+	color = vec4(1,0,0,1);
+	gl_FragDepth = 0;
+return;
+}
 
 		
 		
@@ -79,6 +85,24 @@ return;
 
 
 }
+     
+)";
+
+
+	const char* scpfs = R"(
+#version 430 core
+uniform vec3 colRGB;
+out vec4 color;
+  
+
+void main()
+{
+	color = vec4(colRGB.xyz,1);
+gl_FragDepth=0;
+}
+
+		
+		
      
 )";
 	struct vec2_i{
@@ -390,14 +414,21 @@ return;
 		vec3 npt{ pt.x - cam.position.x,pt.y - cam.position.y,pt.z - cam.position.z };
 
 		float radXZ = sqrt(npt.x*npt.x + npt.z*npt.z);
-		float radZY = sqrt(npt.z*npt.z + npt.y*npt.y);
+	
 		float aXZ = atan2(npt.z, npt.x);
-		float aZY = atan2(npt.y, npt.z);
+		
 		float tcXZ = M_PI_2 - cam.angleXZ;
 		float tcZY = -cam.angleZY;
 		aXZ += tcXZ;
+	
+		vec3 npt2 {cos(aXZ)*radXZ,npt.y,sin(aXZ)*radXZ };
+		float aZY = atan2(npt2.y, npt2.z);
+		float radZY = sqrt(npt2.z*npt2.z + npt2.y*npt2.y);
 		aZY += tcZY;
-		return vec3{ cos(aXZ)*radXZ,sin(aZY)*radZY,sin(aXZ)*radXZ };
+		return vec3{ npt2.x,sin(aZY)*radZY,cos(aZY)*radZY };
+
+
+
 
 
 	}
@@ -673,9 +704,9 @@ return;
 
 		if (!cull(subject.a.x,subject.a.y, subject.b.x,subject.b.y,subject.c.x,subject.c.y,left,right,top,bottom))
 			return;
+		glUseProgram(ShaderProgram);
+		vec3 n = scalarMultiply(100,normalize(parent.normal));
 		
-
-
 		GLint loc = glGetUniformLocation(ShaderProgram, "colRGB");
 		if (loc != -1)
 		{
@@ -685,14 +716,14 @@ return;
 		GLint loc2 = glGetUniformLocation(ShaderProgram, "origin");
 		if (loc2 != -1)
 		{
-			glUniform3f(loc2, parent.a.x, parent.a.y, parent.a.z);
+			glUniform3f(loc2, parent.c.x, parent.c.y, parent.c.z);
 		}
 
-
+		
 		GLint loc3 = glGetUniformLocation(ShaderProgram, "normal");
 		if (loc3 != -1)
 		{
-			glUniform3f(loc3, parent.normal.x, parent.normal.y, parent.normal.z);
+			glUniform3f(loc3, n.x, n.y,n.z);
 		
 		}
 		GLint loc4 = glGetUniformLocation(ShaderProgram, "focalDistance");
@@ -701,12 +732,14 @@ return;
 			glUniform1f(loc4,focalDistance);
 
 		}
+		GLint m_viewport[4];
 
+		glGetIntegerv(GL_VIEWPORT, m_viewport);
 
 		GLint loc5 = glGetUniformLocation(ShaderProgram, "w");
 		if (loc5 != -1)
 		{
-			glUniform1i(loc5,ww);
+			glUniform1i(loc5,m_viewport[2]);
 
 		}
 
@@ -714,7 +747,7 @@ return;
 			GLint loc6 = glGetUniformLocation(ShaderProgram, "h");
 		if (loc6 != -1)
 		{
-			glUniform1i(loc6, wh);
+			glUniform1i(loc6, m_viewport[3]);
 
 		}
 
@@ -742,8 +775,31 @@ return;
 		glVertex2f(subject.c.x, subject.c.y);
 		glEnd();
 
-		
+		glUseProgram(scp);
+		GLint loc9 = glGetUniformLocation(scp, "colRGB");
+		if (loc9 != -1)
+		{
+			glUniform3f(loc9,1,1,1);
 
+		}
+
+		vec3 np = add(parent.a, n);
+		vec2 np2d = perspectiveProject(np,focalDistance);
+		glBegin(GL_LINES);
+		glVertex2f(subject.a.x, subject.a.y);
+		glVertex2f(np2d.x, np2d.y);
+		glEnd();
+
+		glUniform3f(loc9, 0.9, 0.2, 0.8);
+		glBegin(GL_LINES);
+		vec3 np2 = add(parent.a, vec3{0,0,150});
+		vec2 np2d2 = perspectiveProject(np2, focalDistance);
+		glVertex2f(subject.a.x, subject.a.y);
+		glVertex2f(np2d2.x, np2d2.y);
+		glEnd();
+
+
+		
 
 	
 

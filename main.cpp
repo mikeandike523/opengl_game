@@ -369,7 +369,7 @@ void display() {
 	glLoadIdentity();              // Reset model-view matrix
 
 
-
+//	std::cout <<clipAreaYTop<<","<<clipAreaYBottom<< std::endl;
 
 
 //draw here
@@ -405,38 +405,39 @@ void display() {
 
 /* Call back when the windows is re-sized */
 void reshape(GLsizei width, GLsizei height) {
-	// Compute aspect ratio of the new window
-	if (height == 0) height = 1;                // To prevent divide by 0
-	GLfloat aspect = (GLfloat)width / (GLfloat)height;
+// Compute aspect ratio of the new window
+if (height == 0) height = 1;                // To prevent divide by 0
+GLfloat aspect = (GLfloat)width / (GLfloat)height;
 
-	// Set the viewport to cover the new window
-	glViewport(0, 0, width, height);
+// Set the viewport to cover the new window
+glViewport(0, 0, width, height);
 
-	// Set the aspect ratio of the clipping area to match the viewport
-	glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
-	glLoadIdentity();             // Reset the projection matrix
-	if (width >= height) {
-		clipAreaXLeft = -1.0 * aspect;
-		clipAreaXRight = 1.0 * aspect;
-		clipAreaYBottom = -1.0;
-		clipAreaYTop = 1.0;
-	}
-	else {
-		clipAreaXLeft = -1.0;
-		clipAreaXRight = 1.0;
-		clipAreaYBottom = -1.0 / aspect;
-		clipAreaYTop = 1.0 / aspect;
-	}
-	clipAreaXLeft *= mys::ONE_METER;
-	clipAreaYBottom *= mys::ONE_METER;
-	clipAreaXRight *= mys::ONE_METER;
-	clipAreaYTop *= mys::ONE_METER;
+// Set the aspect ratio of the clipping area to match the viewport
+glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
+glLoadIdentity();             // Reset the projection matrix
+if (width >= height) {
+clipAreaXLeft = -1.0 * aspect;
+clipAreaXRight = 1.0 * aspect;
+clipAreaYBottom = -1.0;
+clipAreaYTop = 1.0;
+}
+else {
+clipAreaXLeft = -1.0;
+clipAreaXRight = 1.0;
+clipAreaYBottom = -1.0 / aspect;
+clipAreaYTop = 1.0 / aspect;
+}
 
-	gluOrtho2D(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
-	glScissor(0, 0, width, height);
-	glEnable(GL_SCISSOR_TEST);
-	ww = width;
-	wh = height;
+clipAreaXLeft *= mys::ONE_METER;
+clipAreaYBottom *= mys::ONE_METER;
+clipAreaXRight *= mys::ONE_METER;
+clipAreaYTop *= mys::ONE_METER;
+
+gluOrtho2D(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
+glScissor(0, 0, width, height);
+glEnable(GL_SCISSOR_TEST);
+ww = width;
+wh = height;
 }
 
 /* Called back when the timer expired */
@@ -569,9 +570,10 @@ int main(int argc, char** argv) {
 	for (int i = 0;i < roomList.size();i++) {
 		setRoomOpen(roomList[i], roomRad, rooms);
 	}
-
+	/*
 	for (int i = 0;i < roomList.size();i++) {
 		vec2_i rmloc = roomList[i];
+		
 
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 		StaticTriangleColors.push_back(vec3{ 0,0,1 });
@@ -640,7 +642,8 @@ int main(int argc, char** argv) {
 
 
 	}
-
+	*/
+	/*
 	int ri = rand() % roomList.size();
 	defaultCamera.position.x = (float)(roomList[ri].x) * (float)300;
 	defaultCamera.position.z = (float)(roomList[ri].y) * (float)300;
@@ -656,9 +659,34 @@ int main(int argc, char** argv) {
 	case 2:defaultCamera.angleXZ = M_PI;  break;
 	case 3:defaultCamera.angleXZ = (float)3 * M_PI_2; break;
 	}
+	defaultCamera.angleZY = -M_PI_2 /2;
+	defaultCamera.position.y = 150;
+	*/
+	StaticTriangles.push_back(triangle3{ vec3{-200,-50,-200},vec3{200,-50,-200},vec3{-100,50,-100} });
+	StaticTriangleColors.push_back(vec3{1,0,1});
+	StaticTriangles.push_back(triangle3{ vec3{100,50,-100},vec3{200,-50,-200},vec3{-100,50,-100} });
+	StaticTriangleColors.push_back(vec3{ 1,0,1 });
+	
+	StaticTriangles.push_back(triangle3{ vec3{-200,-50,200},vec3{200,-50,200},vec3{-100,50,100} });
+	StaticTriangleColors.push_back(vec3{ 1,0.5,0.5 });
+	StaticTriangles.push_back(triangle3{ vec3{100,50,100},vec3{200,-50,200},vec3{-100,50,100} });
+	StaticTriangleColors.push_back(vec3{ 1,0.5,0.5 });
+
+
+	StaticTriangles.push_back(triangle3{ vec3{-200,-50,200},vec3{-200,-50,-200},vec3{-100,50,-100} });
+	StaticTriangleColors.push_back(vec3{ 0.5,0.5,0.7 });
+	StaticTriangles.push_back(triangle3{ vec3{-200,-50,200},vec3{-100,50,100},vec3{-100,50,-100} });
+	StaticTriangleColors.push_back(vec3{ 0.5,0.5,0.7 });
+
+
+	StaticTriangles.push_back(triangle3{ vec3{200,-50,200},vec3{200,-50,-200},vec3{100,50,-100} });
+	StaticTriangleColors.push_back(vec3{ 0.8,0.7,0.7 });
+	StaticTriangles.push_back(triangle3{ vec3{200,-50,200},vec3{100,50,100},vec3{100,50,-100} });
+	StaticTriangleColors.push_back(vec3{ 0.8,0.7,0.7 });
 
 
 
+	
 	glutInit(&argc, argv);            // Initialize GLUT
 	glutInitDisplayMode(GLUT_DOUBLE); // Enable double buffered mode
 	glutInitWindowSize(windowWidth, windowHeight);  // Initial window width and height
@@ -700,13 +728,33 @@ int main(int argc, char** argv) {
 	glLinkProgram(ShaderProgram);
 	glUseProgram(ShaderProgram);
 
+
+	GLuint fs2;
+	//vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fs2= glCreateShader(GL_FRAGMENT_SHADER);
+
+	//glShaderSourceARB(vertexShader, 1, &mys::vertex_shader, nullptr);
+
+	glShaderSourceARB(fs2, 1, &mys::scpfs, nullptr);
+	glCompileShaderARB(fs2);
+	scp = glCreateProgram();
+
+	glAttachShader(scp, vertexShader);
+	glAttachShader(scp, fs2);
+
+	glLinkProgram(scp);
+	
+
+
+
+
 	glClearDepth(1.0);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
 	glScissor(0, 0, windowWidth, windowHeight);
 	glEnable(GL_SCISSOR_TEST);
-
+	std::cout << crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).x<<","<< crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).y <<","<< crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).z << std::endl;
 
 	glutDisplayFunc(display);     // Register callback handler for window re-paint
 	glutReshapeFunc(reshape);     // Register callback handler for window re-shape
