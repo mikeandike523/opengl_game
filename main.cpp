@@ -91,6 +91,16 @@ float fElapsedTime;
 /* Callback handler for window re-paint event */
 void display() {
 	current_ticks = glutGet(GLUT_ELAPSED_TIME);
+
+
+	/*
+	GLint m_viewport[4];
+
+	glGetIntegerv(GL_VIEWPORT, m_viewport);*/
+
+
+
+
 	bool moving = false;
 	float nx = defaultCamera.position.x;
 	float nz = defaultCamera.position.z;
@@ -351,6 +361,10 @@ void display() {
 	}
 
 	mys::rotMatrix=makeRotationMatrixForXZAndZYOnly(M_PI_2 - defaultCamera.angleXZ, -defaultCamera.angleZY);
+
+
+
+
 	if (keyleftisdown)
 	{
 
@@ -438,6 +452,22 @@ glScissor(0, 0, width, height);
 glEnable(GL_SCISSOR_TEST);
 ww = width;
 wh = height;
+glUniform1i(shaderuniformlocations.w, ww);
+
+
+
+
+
+glUniform1i(shaderuniformlocations.h, wh);
+
+
+
+
+glUniform1f(shaderuniformlocations.top, clipAreaYTop);
+
+
+glUniform1f(shaderuniformlocations.right, clipAreaXRight);
+
 }
 
 /* Called back when the timer expired */
@@ -736,6 +766,7 @@ int main(int argc, char** argv) {
 	shaderuniformlocations.colRGB = glGetUniformLocation(ShaderProgram, "colRGB");
 	shaderuniformlocations.origin = glGetUniformLocation(ShaderProgram, "origin");
 	shaderuniformlocations.normal = glGetUniformLocation(ShaderProgram, "normal");
+	glUniform1f(shaderuniformlocations.focalDistance, defaultCamera.focalDistance);
 
 
 	//GLuint fs2;

@@ -732,32 +732,7 @@ gl_FragDepth=0;
 		
 		
 		
-			glUniform1f(shaderuniformlocations.focalDistance,focalDistance);
-
-		
-		/*
-		GLint m_viewport[4];
-
-		glGetIntegerv(GL_VIEWPORT, m_viewport);*/
-
 	
-			glUniform1i(shaderuniformlocations.w,ww);
-
-	
-
-
-	
-			glUniform1i(shaderuniformlocations.h , wh);
-
-		
-
-	
-			glUniform1f(shaderuniformlocations.top, top);
-
-
-			glUniform1f(shaderuniformlocations.right, right);
-
-
 
 	
 
