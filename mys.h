@@ -25,6 +25,11 @@ namespace mys {
 	
 	GLint ShaderProgram;
 	GLint scp;
+	struct shaderuniformlocationstorage {
+		GLint w, h,colRGB, origin,normal,top,right,focalDistance;
+
+	} shaderuniformlocations;
+	
 	const char* vertex_shader = R"(
 
 
@@ -712,66 +717,49 @@ gl_FragDepth=0;
 			return;
 	//	glUseProgram(ShaderProgram);
 		//parent.normal = normalize(parent.normal);
-		GLint loc = glGetUniformLocation(ShaderProgram, "colRGB");
-		if (loc != -1)
-		{
-			glUniform3f(loc, color.x,color.y,color.z);
-		}
+		//glGetUniformLocation(ShaderProgram, "origin");
+	
+			glUniform3f(shaderuniformlocations.colRGB, color.x,color.y,color.z);
+	
 
-		GLint loc2 = glGetUniformLocation(ShaderProgram, "origin");
-		if (loc2 != -1)
-		{
-			glUniform3f(loc2, parent.c.x, parent.c.y, parent.c.z);
-		}
+	
+			glUniform3f(shaderuniformlocations.origin, parent.c.x, parent.c.y, parent.c.z);
+		
 
 		
-		GLint loc3 = glGetUniformLocation(ShaderProgram, "normal");
-		if (loc3 != -1)
-		{
-			glUniform3f(loc3, parent.normal.x, parent.normal.y,parent.normal.z);
 		
-		}
-		GLint loc4 = glGetUniformLocation(ShaderProgram, "focalDistance");
-		if (loc4 != -1)
-		{
-			glUniform1f(loc4,focalDistance);
+			glUniform3f(shaderuniformlocations.normal, parent.normal.x, parent.normal.y,parent.normal.z);
+		
+		
+		
+			glUniform1f(shaderuniformlocations.focalDistance,focalDistance);
 
-		}
+		
 		/*
 		GLint m_viewport[4];
 
 		glGetIntegerv(GL_VIEWPORT, m_viewport);*/
 
-		GLint loc5 = glGetUniformLocation(ShaderProgram, "w");
-		if (loc5 != -1)
-		{
-			glUniform1i(loc5,ww);
+	
+			glUniform1i(shaderuniformlocations.w,ww);
 
-		}
+	
 
 
-			GLint loc6 = glGetUniformLocation(ShaderProgram, "h");
-		if (loc6 != -1)
-		{
-			glUniform1i(loc6, wh);
+	
+			glUniform1i(shaderuniformlocations.h , wh);
 
-		}
+		
 
-		GLint loc7 = glGetUniformLocation(ShaderProgram, "right");
-		if (loc7 != -1)
-		{
-			glUniform1f(loc7, right);
-
-		}
+	
+			glUniform1f(shaderuniformlocations.top, top);
 
 
-		GLint loc8 = glGetUniformLocation(ShaderProgram, "top");
-		if (loc8 != -1)
-		{
-			glUniform1f(loc8, top);
+			glUniform1f(shaderuniformlocations.right, right);
 
-		}
 
+
+	
 
 
 

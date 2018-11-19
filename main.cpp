@@ -728,11 +728,19 @@ int main(int argc, char** argv) {
 
 	glLinkProgram(ShaderProgram);
 	glUseProgram(ShaderProgram);
+	shaderuniformlocations.focalDistance = glGetUniformLocation(ShaderProgram, "focalDistance");
+	shaderuniformlocations.w = glGetUniformLocation(ShaderProgram, "w");
+	shaderuniformlocations.h = glGetUniformLocation(ShaderProgram, "h");
+	shaderuniformlocations.right = glGetUniformLocation(ShaderProgram, "right");
+	shaderuniformlocations.top = glGetUniformLocation(ShaderProgram, "top");
+	shaderuniformlocations.colRGB = glGetUniformLocation(ShaderProgram, "colRGB");
+	shaderuniformlocations.origin = glGetUniformLocation(ShaderProgram, "origin");
+	shaderuniformlocations.normal = glGetUniformLocation(ShaderProgram, "normal");
 
 
-	GLuint fs2;
+	//GLuint fs2;
 	//vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	fs2= glCreateShader(GL_FRAGMENT_SHADER);
+	//fs2= glCreateShader(GL_FRAGMENT_SHADER);
 
 	//glShaderSourceARB(vertexShader, 1, &mys::vertex_shader, nullptr);
 	/*
