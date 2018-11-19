@@ -64,11 +64,6 @@ float cx =(-1.0+2.0*gl_FragCoord.x/w)*right;
 	cy /= focalDistance;
 	vec3 dirvec = vec3( cx,cy,1 );
 	float t = dot(normal, origin) / dot(normal,dirvec);
-if(abs(dot(normal,dirvec))<5){
-	color = vec4(1,0,0,1);
-	gl_FragDepth = 0;
-return;
-}
 
 		
 		
@@ -397,7 +392,7 @@ gl_FragDepth=0;
 	//not needed for now until have camera movement
 	//make code for rotation matrix
 	mat3 makeRotationMatrixForXZAndZYOnly(float angleXZ, float angleZY) {
-		return multiplyTwoMat3s(mat3{cos(angleXZ),0,sin(angleXZ),0,1,0,-1*sin(angleXZ),0,cos(angleXZ)}, mat3{ 1,0,0,0,cos(angleZY) ,-1*sin(angleZY),0,sin(angleZY),cos(angleZY)});
+		return multiplyTwoMat3s( mat3{ 1,0,0,0,cos(-angleZY) ,-1*sin(-angleZY),0,sin(-angleZY),cos(-angleZY)}, mat3{ cos(-angleXZ),0,sin(-angleXZ),0,1,0,-1 * sin(-angleXZ),0,cos(-angleXZ) });
 	}
 
 
@@ -412,7 +407,7 @@ gl_FragDepth=0;
 	}
 	vec3 getRelPos(camera cam , vec3 pt) {
 		vec3 npt{ pt.x - cam.position.x,pt.y - cam.position.y,pt.z - cam.position.z };
-
+		/*
 		float radXZ = sqrt(npt.x*npt.x + npt.z*npt.z);
 	
 		float aXZ = atan2(npt.z, npt.x);
@@ -422,26 +417,37 @@ gl_FragDepth=0;
 		aXZ += tcXZ;
 	
 		vec3 npt2 {cos(aXZ)*radXZ,npt.y,sin(aXZ)*radXZ };
-		float aZY = atan2(npt2.y, npt2.z);
+	
 		float radZY = sqrt(npt2.z*npt2.z + npt2.y*npt2.y);
+		
+		return vec3{ npt2.x,sin(aZY)*radZY,cos(aZY)*radZY };*/
+	
+		float rad = sqrt(npt.x*npt.x +npt.y*npt.y +npt.z*npt.z);
+		float aXZ = atan2(npt.z, npt.x);
+		float aZY = acos(npt.y/rad);
+		float tcXZ = M_PI_2 - cam.angleXZ;
+		float tcZY = -cam.angleZY;
+		aXZ += tcXZ;
 		aZY += tcZY;
-		return vec3{ npt2.x,sin(aZY)*radZY,cos(aZY)*radZY };
+
+		return vec3{ rad*sin(aZY)*cos(aXZ),rad*cos(aZY),rad*sin(aZY)*sin(aXZ) };
+	
 
 
 
 
 
 	}
+	mat3 rotMatrix;
 	triangle3 adjustTriangle3ToCamera(camera cam, triangle3 T) {
 		
-		/*mat3 rotMatrix = makeRotationMatrixForXZAndZYOnly(M_PI_2-cam.angleXZ, -cam.angleZY);
-		vec3 newA = subtract(matrixMultiply(rotMatrix, T.a),cam.position);
-		vec3 newB = subtract(matrixMultiply(rotMatrix, T.b), cam.position);
-		vec3 newC = subtract(matrixMultiply(rotMatrix, T.c), cam.position);*/
-		vec3 newA = getRelPos(cam, T.a);
-		vec3 newB = getRelPos(cam, T.b);
-		vec3 newC = getRelPos(cam, T.c);
-		return newTriangle3(newA, newB, newC);
+		
+		vec3 newA =matrixMultiply(rotMatrix, subtract(T.a,cam.position));
+		vec3 newB = matrixMultiply(rotMatrix, subtract(T.b, cam.position));
+		vec3 newC = matrixMultiply(rotMatrix, subtract(T.c, cam.position));
+
+		return newTriangle3(newA,newB, newC);
+		//return newTriangle3(getRelPos(cam, T.a), getRelPos(cam, T.b), getRelPos(cam, T.c));
 	}
 	bool triangle3CullAndClipBehindNearPlane(triangle3 T,triangle3& result1, triangle3& result2, int& oneOrTwoTriangles) {
 		int aIsIn=1;
@@ -704,9 +710,8 @@ gl_FragDepth=0;
 
 		if (!cull(subject.a.x,subject.a.y, subject.b.x,subject.b.y,subject.c.x,subject.c.y,left,right,top,bottom))
 			return;
-		glUseProgram(ShaderProgram);
-		vec3 n = scalarMultiply(100,normalize(parent.normal));
-		
+	//	glUseProgram(ShaderProgram);
+		//parent.normal = normalize(parent.normal);
 		GLint loc = glGetUniformLocation(ShaderProgram, "colRGB");
 		if (loc != -1)
 		{
@@ -723,7 +728,7 @@ gl_FragDepth=0;
 		GLint loc3 = glGetUniformLocation(ShaderProgram, "normal");
 		if (loc3 != -1)
 		{
-			glUniform3f(loc3, n.x, n.y,n.z);
+			glUniform3f(loc3, parent.normal.x, parent.normal.y,parent.normal.z);
 		
 		}
 		GLint loc4 = glGetUniformLocation(ShaderProgram, "focalDistance");
@@ -732,14 +737,15 @@ gl_FragDepth=0;
 			glUniform1f(loc4,focalDistance);
 
 		}
+		/*
 		GLint m_viewport[4];
 
-		glGetIntegerv(GL_VIEWPORT, m_viewport);
+		glGetIntegerv(GL_VIEWPORT, m_viewport);*/
 
 		GLint loc5 = glGetUniformLocation(ShaderProgram, "w");
 		if (loc5 != -1)
 		{
-			glUniform1i(loc5,m_viewport[2]);
+			glUniform1i(loc5,ww);
 
 		}
 
@@ -747,7 +753,7 @@ gl_FragDepth=0;
 			GLint loc6 = glGetUniformLocation(ShaderProgram, "h");
 		if (loc6 != -1)
 		{
-			glUniform1i(loc6, m_viewport[3]);
+			glUniform1i(loc6, wh);
 
 		}
 
@@ -774,15 +780,15 @@ gl_FragDepth=0;
 		glVertex2f(subject.b.x, subject.b.y);
 		glVertex2f(subject.c.x, subject.c.y);
 		glEnd();
-
+		/*
 		glUseProgram(scp);
 		GLint loc9 = glGetUniformLocation(scp, "colRGB");
 		if (loc9 != -1)
 		{
 			glUniform3f(loc9,1,1,1);
 
-		}
-
+		}*/
+		/*
 		vec3 np = add(parent.a, n);
 		vec2 np2d = perspectiveProject(np,focalDistance);
 		glBegin(GL_LINES);
@@ -797,7 +803,7 @@ gl_FragDepth=0;
 		glVertex2f(subject.a.x, subject.a.y);
 		glVertex2f(np2d2.x, np2d2.y);
 		glEnd();
-
+		*/
 
 		
 

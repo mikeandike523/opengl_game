@@ -350,7 +350,7 @@ void display() {
 
 	}
 
-
+	mys::rotMatrix=makeRotationMatrixForXZAndZYOnly(M_PI_2 - defaultCamera.angleXZ, -defaultCamera.angleZY);
 	if (keyleftisdown)
 	{
 
@@ -659,7 +659,7 @@ int main(int argc, char** argv) {
 	case 2:defaultCamera.angleXZ = M_PI;  break;
 	case 3:defaultCamera.angleXZ = (float)3 * M_PI_2; break;
 	}
-	//defaultCamera.angleZY = M_PI_2 /7;
+	defaultCamera.angleZY = M_PI_2 /7;
 	//defaultCamera.position.y = 150;
 	
 	/*
@@ -735,7 +735,7 @@ int main(int argc, char** argv) {
 	fs2= glCreateShader(GL_FRAGMENT_SHADER);
 
 	//glShaderSourceARB(vertexShader, 1, &mys::vertex_shader, nullptr);
-
+	/*
 	glShaderSourceARB(fs2, 1, &mys::scpfs, nullptr);
 	glCompileShaderARB(fs2);
 	scp = glCreateProgram();
@@ -744,7 +744,7 @@ int main(int argc, char** argv) {
 	glAttachShader(scp, fs2);
 
 	glLinkProgram(scp);
-	
+	*/
 
 
 
@@ -755,7 +755,7 @@ int main(int argc, char** argv) {
 
 	glScissor(0, 0, windowWidth, windowHeight);
 	glEnable(GL_SCISSOR_TEST);
-	std::cout << crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).x<<","<< crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).y <<","<< crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).z << std::endl;
+	//std::cout << crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).x<<","<< crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).y <<","<< crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).z << std::endl;
 
 	glutDisplayFunc(display);     // Register callback handler for window re-paint
 	glutReshapeFunc(reshape);     // Register callback handler for window re-shape
