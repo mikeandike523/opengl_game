@@ -659,7 +659,7 @@ int main(int argc, char** argv) {
 	case 2:defaultCamera.angleXZ = M_PI;  break;
 	case 3:defaultCamera.angleXZ = (float)3 * M_PI_2; break;
 	}
-	defaultCamera.angleZY = M_PI_2 /7;
+	//defaultCamera.angleZY = M_PI_2 /7;
 	//defaultCamera.position.y = 150;
 	
 	/*
