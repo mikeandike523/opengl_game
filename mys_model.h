@@ -1,9 +1,8 @@
 #pragma once
 #include <mys.h>
-#include <parse_stl.h>
+
 using namespace mys;
 namespace mys_model {
-	const char* test_coin = "C:\\Users\\Michael Sohnen\\Desktop\\eevee_lowpoly_flowalistik.STL";
 	mat3 eulerX(float angle){
 		return mat3{
 			1,0,0,
@@ -56,9 +55,7 @@ namespace mys_model {
 	struct triangle3NoNormal {
 		vec3 a, b, c;
 	};
-	triangle3NoNormal translateConvention(const stl::triangle& T) {
-		return triangle3NoNormal{ vec3{T.v1.x,T.v1.y,T.v1.z},vec3{T.v2.x,T.v2.y,T.v2.z},vec3{T.v3.x,T.v3.y,T.v3.z} };
-	}
+
 	class mesh {
 	public:
 		int toRebuild=1;
@@ -90,34 +87,26 @@ namespace mys_model {
 			 currentAxes = getRotatedAxes(newOrientation);
 			 toRebuild = 1;
 		 }
-		 //credit here: https://github.com/dillonhuff/stl_parser
-		 void loadSTL(const char* filepath, float rescale) {
-			 composition.clear();
-			 auto info = stl::parse_stl(filepath);
-
-			 std::vector<stl::triangle> triangles = info.triangles;
-			 for (int i = 0;i < triangles.size();i++) {
-				 triangle3NoNormal nt = translateConvention(triangles[i]);
-				 composition.push_back(triangle3NoNormal{ scalarMultiply(rescale,nt.a),scalarMultiply(rescale,nt.b) ,scalarMultiply(rescale,nt.c) });
-			 }
-			 toRebuild = 1;
-			 rebuild();
-
-		 }
+		
 		 void rebuild(int forcebuild = 0) {
 			 if (toRebuild||forcebuild) {
 				 //write code here
 				 presence.clear();
+				// std::cout << position.x << std::endl;
 				 for (int i = 0;i < composition.size();i++) {
-					 presence.push_back(newTriangle3( add(scalarMultiply(composition[i].a.x,currentAxes.i), add( scalarMultiply(composition[i].a.y,currentAxes.j) 
-						 ,scalarMultiply(composition[i].a.z,currentAxes.k))),
-						 
-						 add(scalarMultiply(composition[i].b.x,currentAxes.i), add(scalarMultiply(composition[i].b.y,currentAxes.j)
-						 ,scalarMultiply(composition[i].b.z,currentAxes.k))),
+					 vec3 p1 = add(scalarMultiply(composition[i].a.x, currentAxes.i), add(scalarMultiply(composition[i].a.y, currentAxes.j)
+						 , scalarMultiply(composition[i].a.z, currentAxes.k))) ;
+					 vec3 p2 = add(scalarMultiply(composition[i].b.x, currentAxes.i), add(scalarMultiply(composition[i].b.y, currentAxes.j)
+						 , scalarMultiply(composition[i].b.z, currentAxes.k)));
+
+					 vec3 p3 = add(scalarMultiply(composition[i].c.x, currentAxes.i), add(scalarMultiply(composition[i].c.y, currentAxes.j),
+						 scalarMultiply(composition[i].c.z, currentAxes.k)));
+					 presence.push_back(newTriangle3(
+						 add(p1, position),
+						 add(p2, position),
+						 add(p3, position)
 
 
-						 add(scalarMultiply(composition[i].c.x,currentAxes.i), add(scalarMultiply(composition[i].c.y,currentAxes.j)
-						 ,scalarMultiply(composition[i].c.z,currentAxes.k)))
 						 
 						 
 						 
@@ -131,8 +120,10 @@ namespace mys_model {
 		 }
 #define MODEL_MAGENTA vec3{0.6,0.6,0.6} 
 		 void render() {
+			 
 			// if (canDraw) {
-				// rebuild();
+				rebuild();
+				
 				 for (int i = 0;i < presence.size();i++) {
 					 triangle3 T = adjustTriangle3ToCamera(defaultCamera,presence[i]);
 					 mys::triangle3 result1;
@@ -170,6 +161,28 @@ namespace mys_model {
 		for (int i = 0;i < m1.composition.size();i++) {
 			m2.composition.push_back(m1.composition[i]);
 		}
+
+	}
+	
+	void makeCoin(mesh& m) {
+		for (int i = 0;i < 16;i++) {
+			float a = (float)2 * M_PI*(float)i / (float)16;
+			float ap1 = (float)2 * M_PI*(float)(i+1) / (float)16;
+			float x1 = 25 * cos(a);
+			float y1 = 25 * sin(a);
+			float x2 = 25 * cos(ap1);
+			float y2 = 25 * sin(ap1);
+			vec3 fr{ x1,y1,5 };
+			vec3 br{ x1,y1,-5 };
+			vec3 fl{ x2,y2,5 };
+			vec3 bl{ x2,y2,-5 };
+			m.composition.push_back(triangle3NoNormal{fl,fr,br});
+			m.composition.push_back(triangle3NoNormal{ fl,bl,br });
+			m.composition.push_back(triangle3NoNormal{ vec3{0,0,-5},br,bl });
+			m.composition.push_back(triangle3NoNormal{ vec3{0,0,5},fr,fl });
+		}
+
+
 
 	}
 

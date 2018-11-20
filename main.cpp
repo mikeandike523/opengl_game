@@ -407,11 +407,16 @@ void display() {
 		}
 	}
 	
-	/*
+	
 	for (int i = 0;i < coins.size();i++) {
 		coins[i].render();
 	//	std::cout << coins[i].presence.size()<<std::endl;
-	}*/
+	}
+
+	for (int i = 0;i < coins.size();i++) {
+		coins[i].rotate(mys_model::yaw_pitch_roll{M_PI_4/(float)8,0,0});
+	}
+
 
 
 	glutSwapBuffers();  // Swap front and back buffers (of double buffered mode)
@@ -606,23 +611,24 @@ int main(int argc, char** argv) {
 	for (int i = 0;i < roomList.size();i++) {
 		setRoomOpen(roomList[i], roomRad, rooms);
 	}
-#define COIN_COUNT 7
-	int cl = COIN_COUNT;
+	int cc = roomList.size();
+	int cl = cc;
 	for (int i = 0;i < roomList.size();i++) {
 
 		vec2_i rmloc = roomList[i];
 		if (cl>0) {
-			std::cout << "loading coin " << COIN_COUNT - cl+1 << std::endl;
-			mys_model::mesh coin(vec3{ (float)rmloc.x * 300,75,(float)rmloc.y * 300 }, mys_model::yaw_pitch_roll{ 0,0,0 });
-			if (cl == COIN_COUNT) {
-				coin.loadSTL(mys_model::test_coin, (float)20);
-
+			std::cout << "loading coin " << cc - cl+1 << std::endl;
+			mys_model::mesh coin(vec3{ (float)(rmloc.x * 300),0,(float)(rmloc.y * 300) }, mys_model::yaw_pitch_roll{ 0,0,0 });
+			if (cl == cc) {
+				mys_model::makeCoin(coin);
+				coin.rebuild(1);
 			}
 
 			coins.push_back(coin);
-			if (cl < COIN_COUNT) {
-				mys_model::copy_composition_from_to(coins[0], coins[COIN_COUNT-cl]);
-				coins[COIN_COUNT-cl].rebuild(1);
+			if (cl < cc) {
+				mys_model::copy_composition_from_to(coins[0], coins[cc-cl]);
+				coins[cc - cl].moveTo(vec3{ (float)(rmloc.x * 300),0,(float)(rmloc.y * 300) });
+				coins[cc-cl].rebuild(1);
 			}
 			cl--;
 		}
