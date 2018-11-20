@@ -56,7 +56,7 @@ inline void gen_wall(int x, int z, int side) {
 	wallDirs.push_back(side);
 }
 
-mys::camera defaultCamera;
+
 
 
 char title[] = "Game 1";  // Windowed mode's title

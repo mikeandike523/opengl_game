@@ -317,7 +317,7 @@ gl_FragDepth=0;
 		float bottomright = p3_y - p2_y;
 
 		float det = topleft * bottomright - topright * bottomleft;
-		if (fabs(det) < STANDARD_EPSILON){
+		if (abs(det) < STANDARD_EPSILON){
 			return 0; //singular matrix no intersection
 			
 		}
@@ -370,7 +370,7 @@ gl_FragDepth=0;
 		float bottomright = p3_y - p2_y;
 
 		float det = topleft * bottomright - topright * bottomleft;
-		if (fabs(det) < STANDARD_EPSILON) {
+		if (abs(det) < STANDARD_EPSILON) {
 			return 0; //singular matrix no intersection
 
 		}
@@ -922,6 +922,6 @@ gl_FragDepth=0;
 	}
 
 
-
+	mys::camera defaultCamera;
 
 }

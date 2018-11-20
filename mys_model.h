@@ -109,17 +109,21 @@ namespace mys_model {
 			 }
 			 canDraw = 1;
 		 }
-
+		 /*
 		 void render() {
 			 if (canDraw) {
 				 rebuild();
 				 for (int i = 0;i < composition.size();i++) {
-				 
+					 triangle3 T = adjustTriangle3ToCamera(defaultCamera,triangle3{ composition[i].a,composition[i].b,composition[i].c });
+					 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(T, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, vec3{0.9,0.8,0.8}, T, defaultCamera.focalDistance);
+
+					 
 				 }
 
 			 
 			 }
 		 }
+		 */
 
 
 
