@@ -613,25 +613,28 @@ int main(int argc, char** argv) {
 	}
 	int cc = roomList.size();
 	int cl = cc;
+	int ri = rand() % roomList.size();
 	for (int i = 0;i < roomList.size();i++) {
 
 		vec2_i rmloc = roomList[i];
-		if (cl>0) {
+		if (cl>0&&i!=ri) {
 			std::cout << "loading coin " << cc - cl+1 << std::endl;
 			mys_model::mesh coin(vec3{ (float)(rmloc.x * 300),0,(float)(rmloc.y * 300) }, mys_model::yaw_pitch_roll{ 0,0,0 });
 			if (cl == cc) {
 				mys_model::makeCoin(coin);
+				//coin.moveTo(vec3{ (float)(rmloc.x * 300),0,(float)(rmloc.y * 300) });
 				coin.rebuild(1);
 			}
 
 			coins.push_back(coin);
 			if (cl < cc) {
 				mys_model::copy_composition_from_to(coins[0], coins[cc-cl]);
-				coins[cc - cl].moveTo(vec3{ (float)(rmloc.x * 300),0,(float)(rmloc.y * 300) });
+				//coins[cc - cl].moveTo(vec3{ (float)(rmloc.x * 300),0,(float)(rmloc.y * 300) });
 				coins[cc-cl].rebuild(1);
 			}
 			cl--;
 		}
+
 
 	
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 - 150)} });
@@ -703,7 +706,7 @@ int main(int argc, char** argv) {
 	}
 	
 	
-	int ri = rand() % roomList.size();
+	
 	defaultCamera.position.x = (float)(roomList[ri].x) * (float)300;
 	defaultCamera.position.z = (float)(roomList[ri].y) * (float)300;
 

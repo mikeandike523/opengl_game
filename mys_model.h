@@ -65,9 +65,9 @@ namespace mys_model {
 		int canDraw = 0;
 		std::vector<triangle3NoNormal> composition;
 		std::vector<triangle3> presence;
-		 mesh(vec3 position, yaw_pitch_roll orientation) {
-			 position = position;
-			 orientation = orientation;
+		 mesh(vec3 position1, yaw_pitch_roll orientation1) {
+			 position = position1;
+			 orientation = orientation1;
 			 currentAxes = getRotatedAxes(orientation);
 
 		}
