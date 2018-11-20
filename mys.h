@@ -471,6 +471,9 @@ gl_FragDepth=0;
 		int sum = aIsIn + bIsIn + cIsIn;
 		if (sum == 0)
 			return false;
+		if (T.a.z > FAR_PLANE&&T.b.z > FAR_PLANE&&T.c.z > FAR_PLANE) 
+			return 0;
+		
 		if (sum == 3) {
 			result1 = T;
 			oneOrTwoTriangles = 1;
