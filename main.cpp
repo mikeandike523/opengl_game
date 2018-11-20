@@ -6,6 +6,7 @@
 #include <mys.h>
 #include <mazegen.h>
 #include <ctime>
+#include <mys_model.h>
 using namespace mys;
 std::vector<mys::triangle3> StaticTriangles;
 std::vector<mys::vec3> StaticTriangleColors;
@@ -15,7 +16,7 @@ std::vector<int> wallDirs;
 
 constexpr float WALL_BUFFER = 30;
 constexpr float CORNER_BUFFER = 5;
-
+std::vector<mys_model::mesh> coins;
 inline void gen_wall(int x, int z, int side) {
 	//vec2_i offs = compassToVec2_i(side);
 
@@ -68,7 +69,7 @@ int windowPosY = 50;      // Windowed mode's top-left corner y
 int refreshMillis = 15;      // Refresh period in milliseconds
 
 // Projection clipping area
-GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
+
 
 bool fullScreenMode = true; // Full-screen or windowed mode?
 bool paused = false;         // Movement paused or resumed
@@ -405,7 +406,12 @@ void display() {
 			}
 		}
 	}
-
+	
+	/*
+	for (int i = 0;i < coins.size();i++) {
+		coins[i].render();
+	//	std::cout << coins[i].presence.size()<<std::endl;
+	}*/
 
 
 	glutSwapBuffers();  // Swap front and back buffers (of double buffered mode)
@@ -590,7 +596,7 @@ int main(int argc, char** argv) {
 
 	std::atexit(cleanup);
 	defaultCamera = mys::camera{ mys::vec3{0.0,0.0,0.0},(float)M_PI_2,0.0,500 };
-	const int roomRad = 15;
+	const int roomRad = 3;
 	std::vector<mys::vec2_i> roomList;
 	mazegen::push_maze(roomRad, roomList);
 	int rooms[(roomRad * 2 + 1)*(roomRad * 2 + 1)];
@@ -600,11 +606,28 @@ int main(int argc, char** argv) {
 	for (int i = 0;i < roomList.size();i++) {
 		setRoomOpen(roomList[i], roomRad, rooms);
 	}
-	
+#define COIN_COUNT 7
+	int cl = COIN_COUNT;
 	for (int i = 0;i < roomList.size();i++) {
-		vec2_i rmloc = roomList[i];
-		
 
+		vec2_i rmloc = roomList[i];
+		if (cl>0) {
+			std::cout << "loading coin " << COIN_COUNT - cl+1 << std::endl;
+			mys_model::mesh coin(vec3{ (float)rmloc.x * 300,75,(float)rmloc.y * 300 }, mys_model::yaw_pitch_roll{ 0,0,0 });
+			if (cl == COIN_COUNT) {
+				coin.loadSTL(mys_model::test_coin, (float)20);
+
+			}
+
+			coins.push_back(coin);
+			if (cl < COIN_COUNT) {
+				mys_model::copy_composition_from_to(coins[0], coins[COIN_COUNT-cl]);
+				coins[COIN_COUNT-cl].rebuild(1);
+			}
+			cl--;
+		}
+
+	
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 		StaticTriangleColors.push_back(vec3{ 0,0,1 });
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 - 150)} });

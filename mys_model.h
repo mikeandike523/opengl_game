@@ -3,6 +3,7 @@
 #include <parse_stl.h>
 using namespace mys;
 namespace mys_model {
+	const char* test_coin = "C:\\Users\\Michael Sohnen\\Desktop\\eevee_lowpoly_flowalistik.STL";
 	mat3 eulerX(float angle){
 		return mat3{
 			1,0,0,
@@ -30,7 +31,7 @@ namespace mys_model {
 	};
 
 
-	mat3 yaw_pitch_rollMatrix(yaw_pitch_roll params) {
+	mat3 yaw_pitch_rollMatrix(const yaw_pitch_roll& params) {
 		return multiplyTwoMat3s(multiplyTwoMat3s(eulerY(params.yaw),eulerX(params.pitch)),eulerZ(params.roll));
 	}
 
@@ -38,27 +39,28 @@ namespace mys_model {
 		vec3 i, j, k; //screenright, screentop, depth
 	};
 	
-	axes extractRotatedAxes(mat3 ypr) {
+	axes extractRotatedAxes(const mat3& ypr) {
 		return axes{
 		vec3{ypr.entry11,ypr.entry21,ypr.entry31},
 		vec3{ypr.entry12,ypr.entry22,ypr.entry32},
 		vec3{ypr.entry13,ypr.entry23,ypr.entry33}
 		};
 	}
-	axes getRotatedAxes(yaw_pitch_roll orientation) {
+	axes getRotatedAxes(const yaw_pitch_roll& orientation) {
 		return extractRotatedAxes(yaw_pitch_rollMatrix(orientation));
 	}
-	yaw_pitch_roll add(yaw_pitch_roll a, yaw_pitch_roll b) {
+	yaw_pitch_roll add(const yaw_pitch_roll& a, const yaw_pitch_roll& b) {
 		return yaw_pitch_roll{ a.yaw + b.yaw,a.pitch + b.pitch,a.roll + b.roll };
 	}
 	//model that can move in sapce but has no moving parts
 	struct triangle3NoNormal {
 		vec3 a, b, c;
 	};
-	triangle3NoNormal translateConvention(stl::triangle T) {
+	triangle3NoNormal translateConvention(const stl::triangle& T) {
 		return triangle3NoNormal{ vec3{T.v1.x,T.v1.y,T.v1.z},vec3{T.v2.x,T.v2.y,T.v2.z},vec3{T.v3.x,T.v3.y,T.v3.z} };
 	}
 	class mesh {
+	public:
 		int toRebuild=1;
 		vec3 position;
 		axes currentAxes;
@@ -99,31 +101,62 @@ namespace mys_model {
 				 composition.push_back(triangle3NoNormal{ scalarMultiply(rescale,nt.a),scalarMultiply(rescale,nt.b) ,scalarMultiply(rescale,nt.c) });
 			 }
 			 toRebuild = 1;
+			 rebuild();
 
 		 }
-		 void rebuild() {
-			 if (toRebuild) {
+		 void rebuild(int forcebuild = 0) {
+			 if (toRebuild||forcebuild) {
 				 //write code here
+				 presence.clear();
+				 for (int i = 0;i < composition.size();i++) {
+					 presence.push_back(newTriangle3( add(scalarMultiply(composition[i].a.x,currentAxes.i), add( scalarMultiply(composition[i].a.y,currentAxes.j) 
+						 ,scalarMultiply(composition[i].a.z,currentAxes.k))),
+						 
+						 add(scalarMultiply(composition[i].b.x,currentAxes.i), add(scalarMultiply(composition[i].b.y,currentAxes.j)
+						 ,scalarMultiply(composition[i].b.z,currentAxes.k))),
 
+
+						 add(scalarMultiply(composition[i].c.x,currentAxes.i), add(scalarMultiply(composition[i].c.y,currentAxes.j)
+						 ,scalarMultiply(composition[i].c.z,currentAxes.k)))
+						 
+						 
+						 
+					 )
+
+					 );
+				 }
 				 toRebuild = 0;
 			 }
 			 canDraw = 1;
 		 }
-		 /*
+#define MODEL_MAGENTA vec3{0.6,0.6,0.6} 
 		 void render() {
-			 if (canDraw) {
-				 rebuild();
-				 for (int i = 0;i < composition.size();i++) {
-					 triangle3 T = adjustTriangle3ToCamera(defaultCamera,triangle3{ composition[i].a,composition[i].b,composition[i].c });
-					 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(T, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, vec3{0.9,0.8,0.8}, T, defaultCamera.focalDistance);
+			// if (canDraw) {
+				// rebuild();
+				 for (int i = 0;i < presence.size();i++) {
+					 triangle3 T = adjustTriangle3ToCamera(defaultCamera,presence[i]);
+					 mys::triangle3 result1;
+					 mys::triangle3 result2;
+					 int oneOrTwoTriangles;
+	
+					 if (mys::triangle3CullAndClipBehindNearPlane(T, result1, result2, oneOrTwoTriangles)) {
+						 if (oneOrTwoTriangles == 1) {
+							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_MAGENTA, result1, defaultCamera.focalDistance);
+						 }
 
+						 if (oneOrTwoTriangles == 2) {
+
+							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_MAGENTA, result1, defaultCamera.focalDistance);
+							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result2, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_MAGENTA, result2, defaultCamera.focalDistance);
+						 }
+					 }
 					 
 				 }
 
 			 
-			 }
+			 //}
 		 }
-		 */
+		 
 
 
 
@@ -132,6 +165,12 @@ namespace mys_model {
 
 	};
 
+	void copy_composition_from_to(mesh& m1, mesh& m2) {
+		m2.composition.clear();
+		for (int i = 0;i < m1.composition.size();i++) {
+			m2.composition.push_back(m1.composition[i]);
+		}
 
+	}
 
 }

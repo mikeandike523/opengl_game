@@ -8,7 +8,7 @@
 namespace mys {
 
 
-
+	GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
 	int ww, wh;
 	constexpr float STANDARD_EPSILON = 0.001;
 	constexpr float NEAR_PLANE = 5.0;
@@ -123,61 +123,61 @@ gl_FragDepth=0;
 	struct mat3 {
 		float entry11, entry12,entry13, entry21, entry22,entry23,entry31,entry32,entry33;
 	};
-	float magnitude(vec2 v) {
+	float magnitude(const vec2& v) {
 		return sqrt(v.x*v.x+ v.y*v.y );
 	}
-	float magnitude(vec3 v) {
+	float magnitude(const vec3& v) {
 		return sqrt(v.x*v.x + v.y*v.y+v.z*v.z);
 	}
-	vec2 add(vec2 a, vec2 b) {
+	vec2 add(const vec2& a, const vec2& b) {
 		return vec2{ a.x + b.x,a.y + b.y };
 	}
-	vec3 add(vec3 a, vec3 b) {
+	vec3 add(const vec3& a, const vec3& b) {
 		return vec3{ a.x + b.x,a.y + b.y ,a.z+b.z};
 	}
-	vec2 subtract(vec2 a, vec2 b) {
+	vec2 subtract(const vec2& a, const vec2& b) {
 		return vec2{ a.x - b.x,a.y - b.y };
 	}
-	vec3 subtract(vec3 a, vec3 b) {
+	vec3 subtract(const vec3& a, const vec3& b) {
 		return vec3{ a.x - b.x,a.y - b.y ,a.z-b.z};
 	}
-	vec2 scalarMultiply(float s, vec2 v) {
+	vec2 scalarMultiply(float s, const vec2& v) {
 		return vec2{ s*v.x,s*v.y };
 	}
-	vec3 scalarMultiply(float s, vec3 v) {
+	vec3 scalarMultiply(float s, const vec3& v) {
 		return vec3{ s*v.x,s*v.y,s*v.z };
 	}
-	float dotProduct(vec2 a, vec2 b) {
+	float dotProduct(const vec2& a, const vec2& b) {
 		return a.x*b.x + a.y*b.y;
 	}
-	float dotProduct(vec3 a, vec3 b) {
+	float dotProduct(const vec3& a, const vec3& b) {
 		return a.x*b.x + a.y*b.y+a.z*b.z;
 	}
-	vec3 crossProduct(vec3 a,vec3 b) {
+	vec3 crossProduct(const vec3& a,const vec3& b) {
 		return vec3{ a.y*b.z - b.y*a.z,a.z*b.x - a.x*b.z,a.x*b.y - a.y*b.x };
 	}
-	float crossProduct(vec2 a, vec2 b) {
+	float crossProduct(const vec2& a, const vec2& b) {
 		return a.x*b.y - b.x*a.y;
 	}
-	vec2 perpendicular2(vec2 v) { return vec2{v.y,-v.x}; }
+	vec2 perpendicular2(const vec2& v) { return vec2{v.y,-v.x}; }
 
-	float component(vec2 target, vec2 base) {
+	float component (const vec2& target, const vec2& base) {
 		return (target.x*base.x + target.y*base.y) / sqrt(base.x*base.x + base.y*base.y );
 	}
-	float component(vec3 target, vec3 base) {
+	float component(const vec3& target, const vec3& base) {
 		return (target.x*base.x + target.y*base.y + target.z*base.z) / sqrt(base.x*base.x + base.y*base.y + base.z*base.z);
 	}
 
-	vec2 projection(vec2 target, vec2 base) {
+	vec2 projection(const vec2& target, const vec2& base) {
 		float s = (target.x*base.x + target.y*base.y) / (base.x*base.x + base.y*base.y);
 		return vec2{ s*base.x,s*base.y };
 	}
-	vec3 projection(vec3 target, vec3 base) {
+	vec3 projection(const vec3& target, const vec3& base) {
 		float s = (target.x*base.x + target.y*base.y+target.z*base.z) / (base.x*base.x + base.y*base.y+base.z*base.z);
 		return vec3{ s*base.x,s*base.y ,s*base.z};
 	}
 	
-	float angle(vec2 v) {
+	float angle(const vec2& v) {
 		
 		float val = atan2(v.y, v.x);
 		if (val < 0)
@@ -187,10 +187,10 @@ gl_FragDepth=0;
 	}
 
 
-	float angleBetween(vec2 v1, vec2 v2) {
+	float angleBetween(const vec2& v1, const vec2& v2) {
 		return acos((dotProduct(v1, v2)) / (magnitude(v1)*magnitude(v2)));
 	}
-	float angleBetween(vec3 v1, vec3 v2) {
+	float angleBetween(const vec3& v1, const vec3 &v2) {
 		return acos((dotProduct(v1, v2)) / (magnitude(v1)*magnitude(v2)));
 	}
 
@@ -200,22 +200,22 @@ gl_FragDepth=0;
 
 
 	//add vector projection if needed later
-	float determinant(mat2 m) {
+	float determinant(const mat2& m) {
 		return m.entry11*m.entry22 - m.entry12*m.entry21;
 	}
-	float determinant(mat3 m) {
+	float determinant(const mat3& m) {
 		return m.entry11*(m.entry22*m.entry33 - m.entry23*m.entry32) - m.entry12*(m.entry21*m.entry33 - m.entry23*m.entry31) + m.entry13*(m.entry21*m.entry32-m.entry22*m.entry31);
 	}
-	vec2 normalize(vec2 v) {
+	vec2 normalize(const vec2& v) {
 		return scalarMultiply((float)1/magnitude(v),v);
 	}
 
-	vec3 normalize(vec3 v) {
+	vec3 normalize(const vec3& v) {
 		return scalarMultiply((float)1 / magnitude(v), v);
 	}
 
 	
-	bool inverse(mat2 m,mat2& result) {
+	bool inverse(const mat2& m,mat2& result) {
 		float det = determinant(m);
 		if (abs(det) < STANDARD_EPSILON) {
 			return false;
@@ -226,7 +226,7 @@ gl_FragDepth=0;
 		return true;
 	}
 
-	bool inverse(mat3 m, mat3&result) {
+	bool inverse(const mat3& m, mat3&result) {
 		float det = determinant(m);
 		
 		if (abs(det) < STANDARD_EPSILON)
@@ -261,11 +261,11 @@ gl_FragDepth=0;
 		return true;
 	}
 
-	vec2 matrixMultiply(mat2 m, vec2 v) {
+	vec2 matrixMultiply(const mat2& m, const vec2& v) {
 		return vec2{ v.x*m.entry11 + v.y*m.entry12,v.x*m.entry21 + v.y*m.entry22 };
 	}
 
-	vec3 matrixMultiply(mat3 m, vec3 v) {
+	vec3 matrixMultiply(const mat3& m, const vec3& v) {
 		return vec3{ v.x*m.entry11 + v.y*m.entry12 + v.z*m.entry13,v.x*m.entry21 + v.y*m.entry22 + v.z*m.entry23,v.x*m.entry31 + v.y*m.entry32 + v.z*m.entry33 };
 	}
 	struct triangle3 {
@@ -280,10 +280,10 @@ gl_FragDepth=0;
 	struct segment2_flat {
 		float p0_x, p0_y, p1_x, p1_y;
 	};
-	vec2 perspectiveProject(vec3 point, float focalDistance) {
+	vec2 perspectiveProject(const vec3& point, float focalDistance) {
 		return scalarMultiply(focalDistance / point.z, vec2{ point.x,point.y });
 	}
-	vec3 getShaderPoint(vec2 point, triangle3 T, float focalDistance) {
+	vec3 getShaderPoint(const vec2& point,const triangle3& T, float focalDistance) {
 		float cx = point.x;
 		float cy = point.y;
 		cx /= focalDistance;
@@ -339,7 +339,7 @@ gl_FragDepth=0;
 
 
 
-	int get_line_intersection_special(segment2_flat wall,vec2 junction, vec2 player, vec2 veloc,float& i_x,float& i_y)
+	int get_line_intersection_special(const segment2_flat &wall,const vec2& junction, const vec2& player, const vec2& veloc,float& i_x,float& i_y)
 	{
 		
 		vec2 nonJunction;
@@ -390,27 +390,25 @@ gl_FragDepth=0;
 	}
 
 
-	mat3 multiplyTwoMat3s(mat3 a, mat3 b) {
+	mat3 multiplyTwoMat3s(const mat3& a, const mat3& b) {
 		return mat3{ a.entry11*b.entry11 + a.entry12*b.entry21 + a.entry13*b.entry31,a.entry11*b.entry12 + a.entry12*b.entry22 + a.entry13*b.entry32,a.entry11*b.entry13 + a.entry12*b.entry23 + a.entry13*b.entry33,a.entry21*b.entry11 + a.entry22*b.entry21 + a.entry23*b.entry31,a.entry21*b.entry12 + a.entry22*b.entry22 + a.entry23*b.entry32,a.entry21*b.entry13 + a.entry22*b.entry23 + a.entry23*b.entry33,a.entry31*b.entry11 + a.entry32*b.entry21 + a.entry33*b.entry31,a.entry31*b.entry12 + a.entry32*b.entry22 + a.entry33*b.entry32,a.entry31*b.entry13 + a.entry32*b.entry23 + a.entry33*b.entry33};
 	}
 
-	//not needed for now until have camera movement
-	//make code for rotation matrix
 	mat3 makeRotationMatrixForXZAndZYOnly(float angleXZ, float angleZY) {
 		return multiplyTwoMat3s( mat3{ 1,0,0,0,cos(-angleZY) ,-1*sin(-angleZY),0,sin(-angleZY),cos(-angleZY)}, mat3{ cos(-angleXZ),0,sin(-angleXZ),0,1,0,-1 * sin(-angleXZ),0,cos(-angleXZ) });
 	}
 
 
-	triangle3 newTriangle3(vec3 a, vec3 b, vec3 c) {
+	triangle3 newTriangle3(const vec3& a, const vec3& b, const vec3& c) {
 		return triangle3{ a,b,c,crossProduct(subtract(b,a),subtract(c,a)) };
 	}
-	triangle2 projectTriangle(triangle3 T,float focalDistance) {
+	triangle2 projectTriangle(const triangle3& T,float focalDistance) {
 		return triangle2{perspectiveProject(T.a,focalDistance),perspectiveProject(T.b,focalDistance) ,perspectiveProject(T.c,focalDistance) };
 	}
-	triangle3 createTriangle3WithoutCalculatingNormal(vec3 a, vec3 b, vec3 c) {
+	triangle3 createTriangle3WithoutCalculatingNormal(const vec3& a, const vec3& b, const vec3& c) {
 		return triangle3{ a,b,c,vec3{0,0,0} };
 	}
-	vec3 getRelPos(camera cam , vec3 pt) {
+	vec3 getRelPos(const camera& cam , const vec3& pt) {
 		vec3 npt{ pt.x - cam.position.x,pt.y - cam.position.y,pt.z - cam.position.z };
 		/*
 		float radXZ = sqrt(npt.x*npt.x + npt.z*npt.z);
@@ -444,7 +442,7 @@ gl_FragDepth=0;
 
 	}
 	mat3 rotMatrix;
-	triangle3 adjustTriangle3ToCamera(camera cam, triangle3 T) {
+	triangle3 adjustTriangle3ToCamera(const camera& cam, const triangle3& T) {
 		
 		
 		vec3 newA =matrixMultiply(rotMatrix, subtract(T.a,cam.position));
@@ -713,7 +711,7 @@ gl_FragDepth=0;
 
 		return toShow;
 	}
-	void triangle2CullAndClipOutsideWindowAndRender(triangle2 subject,float left, float right, float top, float bottom,vec3 color,triangle3 parent,float focalDistance) {
+	void triangle2CullAndClipOutsideWindowAndRender(const triangle2& subject,float left, float right, float top, float bottom,const vec3& color,const triangle3& parent,float focalDistance) {
 
 
 		if (!cull(subject.a.x,subject.a.y, subject.b.x,subject.b.y,subject.c.x,subject.c.y,left,right,top,bottom))
@@ -789,8 +787,8 @@ gl_FragDepth=0;
 	}
 
 
-	vec2 closest(segment2_flat wall, vec2 player);
-		int checkCircleSegmentCollision(segment2_flat seg,
+	vec2 closest(const segment2_flat& wall, const vec2& player);
+		int checkCircleSegmentCollision(const segment2_flat& seg,
 		float x, float z, float rad)
 	{
 			if (magnitude(subtract(closest(seg, vec2{x,z}), vec2{ x,z }))<=rad)
@@ -798,7 +796,7 @@ gl_FragDepth=0;
 			return 0;
 	}
 	//http://doswa.com/2009/07/13/circle-segment-intersectioncollision.html
-	vec2 closest(segment2_flat wall, vec2 player) {
+	vec2 closest(const segment2_flat& wall, const vec2 &player) {
 		vec2 wallvec{ wall.p1_x - wall.p0_x,wall.p1_y-wall.p0_y };
 		vec2 changevec{player.x-wall.p0_x,player.y-wall.p0_y};
 		float rng = magnitude(wallvec);
@@ -812,7 +810,7 @@ gl_FragDepth=0;
 
 	}
 
-	vec2 vec2_itovec2(vec2_i v) {
+	vec2 vec2_itovec2(const vec2_i& v) {
 		return vec2{ (float)v.x,(float)v.y };
 	}
 	
@@ -822,7 +820,7 @@ gl_FragDepth=0;
 		return vec2{ wall.p0_x,wall.p0_y };
 	}
 
-	vec2 getJunction(segment2_flat wall1, segment2_flat wall2) {
+	vec2 getJunction(const segment2_flat& wall1, const segment2_flat& wall2) {
 		//debug here
 		vec2 junction;
 		vec2 w1p0 = fromFlatSegment2(wall1, 0);
@@ -854,7 +852,7 @@ gl_FragDepth=0;
 	}
 
 
-	int ConcaveOrConvexCorner(segment2_flat wall1, segment2_flat wall2, vec2 player) {
+	int ConcaveOrConvexCorner(const segment2_flat& wall1, const segment2_flat& wall2, const vec2& player) {
 
 		//debug here
 		vec2 junction, a, b;
