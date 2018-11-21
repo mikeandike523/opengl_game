@@ -3,6 +3,7 @@
 
 using namespace mys;
 namespace mys_model {
+	const vec3 MODEL_YELLOW{ 1,1,0.2 };
 	constexpr float cullBuffer = 5;
 	mat3 eulerX(float angle){
 		return mat3{
@@ -152,8 +153,17 @@ namespace mys_model {
 				 return 0;
 			 return 1;
 		 }
-#define MODEL_GREY vec3{0.6,0.6,0.6} 
+
+		 int enabled = 1;
+		 void disable() {
+			 enabled = 0;
+		 }
+		 void enable() {
+			 enabled = 1;
+		 }
 		 void render() {
+			 if (!enabled)
+				 return;
 			 if (!cullModel())
 				 return;
 			// if (canDraw) {
@@ -167,13 +177,13 @@ namespace mys_model {
 	
 					 if (mys::triangle3CullAndClipBehindNearPlane(T, result1, result2, oneOrTwoTriangles)) {
 						 if (oneOrTwoTriangles == 1) {
-							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_GREY, result1, defaultCamera.focalDistance);
+							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_YELLOW, result1, defaultCamera.focalDistance);
 						 }
 
 						 if (oneOrTwoTriangles == 2) {
 
-							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_GREY, result1, defaultCamera.focalDistance);
-							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result2, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_GREY, result2, defaultCamera.focalDistance);
+							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_YELLOW, result1, defaultCamera.focalDistance);
+							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result2, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_YELLOW, result2, defaultCamera.focalDistance);
 						 }
 					 }
 					 
@@ -200,9 +210,9 @@ namespace mys_model {
 	}
 	
 	void makeCoin(mesh& m) {
-		for (int i = 0;i < 16;i++) {
-			float a = (float)2 * M_PI*(float)i / (float)16;
-			float ap1 = (float)2 * M_PI*(float)(i+1) / (float)16;
+		for (int i = 0;i < 12;i++) {
+			float a = (float)2 * M_PI*(float)i / (float)12;
+			float ap1 = (float)2 * M_PI*(float)(i+1) / (float)12;
 			float x1 = 25 * cos(a);
 			float y1 = 25 * sin(a);
 			float x2 = 25 * cos(ap1);

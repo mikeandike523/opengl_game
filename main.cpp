@@ -16,6 +16,7 @@ std::vector<int> wallDirs;
 
 constexpr float WALL_BUFFER = 30;
 constexpr float CORNER_BUFFER = 5;
+constexpr float COLLECT_RADIUS = 50;
 std::vector<mys_model::mesh> coins;
 inline void gen_wall(int x, int z, int side) {
 	//vec2_i offs = compassToVec2_i(side);
@@ -407,13 +408,17 @@ void display() {
 		}
 	}
 	
-	
+	vec2 pl{ defaultCamera.position.x,defaultCamera.position.z };
 	for (int i = 0;i < coins.size();i++) {
 		coins[i].render();
+		if(coins[i].enabled)
+		if (magnitude(subtract(vec2{ coins[i].position.x,coins[i].position.z },pl)) < COLLECT_RADIUS)
+			coins[i].disable();
 	//	std::cout << coins[i].presence.size()<<std::endl;
 	}
 
 	for (int i = 0;i < coins.size();i++) {
+		if(coins[i].enabled)
 		coins[i].rotate(mys_model::yaw_pitch_roll{M_PI_4/(float)32,0,0});
 	}
 
