@@ -408,40 +408,11 @@ gl_FragDepth=0;
 	triangle3 createTriangle3WithoutCalculatingNormal(const vec3& a, const vec3& b, const vec3& c) {
 		return triangle3{ a,b,c,vec3{0,0,0} };
 	}
-	vec3 getRelPos(const camera& cam , const vec3& pt) {
-		vec3 npt{ pt.x - cam.position.x,pt.y - cam.position.y,pt.z - cam.position.z };
-		/*
-		float radXZ = sqrt(npt.x*npt.x + npt.z*npt.z);
-	
-		float aXZ = atan2(npt.z, npt.x);
-		
-		float tcXZ = M_PI_2 - cam.angleXZ;
-		float tcZY = -cam.angleZY;
-		aXZ += tcXZ;
-	
-		vec3 npt2 {cos(aXZ)*radXZ,npt.y,sin(aXZ)*radXZ };
-	
-		float radZY = sqrt(npt2.z*npt2.z + npt2.y*npt2.y);
-		
-		return vec3{ npt2.x,sin(aZY)*radZY,cos(aZY)*radZY };*/
-	
-		float rad = sqrt(npt.x*npt.x +npt.y*npt.y +npt.z*npt.z);
-		float aXZ = atan2(npt.z, npt.x);
-		float aZY = acos(npt.y/rad);
-		float tcXZ = M_PI_2 - cam.angleXZ;
-		float tcZY = -cam.angleZY;
-		aXZ += tcXZ;
-		aZY += tcZY;
-
-		return vec3{ rad*sin(aZY)*cos(aXZ),rad*cos(aZY),rad*sin(aZY)*sin(aXZ) };
-	
-
-
-
-
-
-	}
 	mat3 rotMatrix;
+	vec3 getRelPos(const camera& cam , const vec3& pt) {
+		return matrixMultiply(rotMatrix, subtract(pt, cam.position));
+	}
+
 	triangle3 adjustTriangle3ToCamera(const camera& cam, const triangle3& T) {
 		
 		

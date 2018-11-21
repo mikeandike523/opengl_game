@@ -3,6 +3,7 @@
 
 using namespace mys;
 namespace mys_model {
+	constexpr float cullBuffer = 5;
 	mat3 eulerX(float angle){
 		return mat3{
 			1,0,0,
@@ -87,7 +88,27 @@ namespace mys_model {
 			 currentAxes = getRotatedAxes(newOrientation);
 			 toRebuild = 1;
 		 }
-		
+		 float cullRadius = 0;
+		 void determineCullRadius() {
+			 for (int i = 0;i < composition.size();i++) {
+				 vec3 p1 = add(scalarMultiply(composition[i].a.x, currentAxes.i), add(scalarMultiply(composition[i].a.y, currentAxes.j)
+					 , scalarMultiply(composition[i].a.z, currentAxes.k)));
+				 vec3 p2 = add(scalarMultiply(composition[i].b.x, currentAxes.i), add(scalarMultiply(composition[i].b.y, currentAxes.j)
+					 , scalarMultiply(composition[i].b.z, currentAxes.k)));
+
+				 vec3 p3 = add(scalarMultiply(composition[i].c.x, currentAxes.i), add(scalarMultiply(composition[i].c.y, currentAxes.j),
+					 scalarMultiply(composition[i].c.z, currentAxes.k)));
+				 if (magnitude(p1) > cullRadius)
+					 cullRadius = magnitude(p1);
+				 if (magnitude(p2) > cullRadius)
+					 cullRadius = magnitude(p2);
+				 if (magnitude(p3) > cullRadius)
+					 cullRadius = magnitude(p3);
+
+
+
+			 }
+		 }
 		 void rebuild(int forcebuild = 0) {
 			 if (toRebuild||forcebuild) {
 				 //write code here
@@ -116,11 +137,25 @@ namespace mys_model {
 				 }
 				 toRebuild = 0;
 			 }
-			 canDraw = 1;
+			// canDraw = 1;
 		 }
-#define MODEL_MAGENTA vec3{0.6,0.6,0.6} 
+		 int cullModel() {
+			 vec3 rp = getRelPos(defaultCamera,position);
+			 if (rp.z + cullRadius + cullBuffer < 0)
+				 return 0;
+
+			 if (rp.z - cullRadius - cullBuffer > FAR_PLANE)
+				 return 0;
+			 float rad2d = (cullRadius + cullBuffer)*defaultCamera.focalDistance / rp.z;
+			 vec2 rp2d = perspectiveProject(rp, defaultCamera.focalDistance);
+			 if (rp2d.x - rad2d > clipAreaXRight || rp2d.x + rad2d<clipAreaXLeft || rp2d.y - rad2d>clipAreaYTop || rp2d.y + rad2d < clipAreaYBottom)
+				 return 0;
+			 return 1;
+		 }
+#define MODEL_GREY vec3{0.6,0.6,0.6} 
 		 void render() {
-			 
+			 if (!cullModel())
+				 return;
 			// if (canDraw) {
 				rebuild();
 				
@@ -132,13 +167,13 @@ namespace mys_model {
 	
 					 if (mys::triangle3CullAndClipBehindNearPlane(T, result1, result2, oneOrTwoTriangles)) {
 						 if (oneOrTwoTriangles == 1) {
-							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_MAGENTA, result1, defaultCamera.focalDistance);
+							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_GREY, result1, defaultCamera.focalDistance);
 						 }
 
 						 if (oneOrTwoTriangles == 2) {
 
-							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_MAGENTA, result1, defaultCamera.focalDistance);
-							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result2, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_MAGENTA, result2, defaultCamera.focalDistance);
+							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_GREY, result1, defaultCamera.focalDistance);
+							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result2, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_GREY, result2, defaultCamera.focalDistance);
 						 }
 					 }
 					 

@@ -414,7 +414,7 @@ void display() {
 	}
 
 	for (int i = 0;i < coins.size();i++) {
-		coins[i].rotate(mys_model::yaw_pitch_roll{M_PI_4/(float)8,0,0});
+		coins[i].rotate(mys_model::yaw_pitch_roll{M_PI_4/(float)32,0,0});
 	}
 
 
@@ -624,6 +624,7 @@ int main(int argc, char** argv) {
 				mys_model::makeCoin(coin);
 				//coin.moveTo(vec3{ (float)(rmloc.x * 300),0,(float)(rmloc.y * 300) });
 				coin.rebuild(1);
+			
 			}
 
 			coins.push_back(coin);
@@ -632,6 +633,7 @@ int main(int argc, char** argv) {
 				//coins[cc - cl].moveTo(vec3{ (float)(rmloc.x * 300),0,(float)(rmloc.y * 300) });
 				coins[cc-cl].rebuild(1);
 			}
+			coin.determineCullRadius();
 			cl--;
 		}
 
