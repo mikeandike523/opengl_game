@@ -601,7 +601,8 @@ int main(int argc, char** argv) {
 
 	std::atexit(cleanup);
 	defaultCamera = mys::camera{ mys::vec3{0.0,0.0,0.0},(float)M_PI_2,0.0,500 };
-	const int roomRad = 3;
+	const int roomRad=9;
+	
 	std::vector<mys::vec2_i> roomList;
 	mazegen::push_maze(roomRad, roomList);
 	int rooms[(roomRad * 2 + 1)*(roomRad * 2 + 1)];
