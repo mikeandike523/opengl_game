@@ -370,14 +370,14 @@ void display() {
 	if (keyleftisdown)
 	{
 
-		defaultCamera.angleXZ += (float)2 * M_PI*fElapsedTime;
+		defaultCamera.angleXZ += (float) M_PI*fElapsedTime;
 	}
 
 
 	if (keyrightisdown)
 	{
 
-		defaultCamera.angleXZ -= (float)2 * M_PI* fElapsedTime;
+		defaultCamera.angleXZ -= (float) M_PI* fElapsedTime;
 	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
