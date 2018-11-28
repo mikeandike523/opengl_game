@@ -25,8 +25,9 @@ namespace mys {
 	
 	GLint ShaderProgram;
 	GLint scp;
+	GLint mysgeoshader;
 	struct shaderuniformlocationstorage {
-		GLint w, h,colRGB, origin,normal,top,right,focalDistance;
+		GLint w, h,colRGB, origin,normal,top,right,focalDistance,FAR_PLANE,NEAR_PLANE;
 
 	} shaderuniformlocations;
 	
@@ -58,9 +59,8 @@ uniform int h;
 uniform float right;
 uniform float top;
 out vec4 color;
-  
-float far = 1500;
-
+uniform float FAR_PLANE;
+uniform float NEAR_PLANE;
 void main()
 {
 float cx =(-1.0+2.0*gl_FragCoord.x/w)*right;
@@ -74,13 +74,13 @@ float cx =(-1.0+2.0*gl_FragCoord.x/w)*right;
 		
 
 float dpth =length(t*dirvec);
-if(dpth>far)
+if(dpth>FAR_PLANE)
 {discard;
 return;}
-//color = vec4(vec3(dpth)/far,1);
-color = vec4(clamp(1-(dpth+50)/far,0,1)*colRGB.xyz,1);
+//color = vec4(vec3(dpth)/FAR_PLANE,1);
+color = vec4(clamp(1-(dpth+50)/FAR_PLANE,0,1)*colRGB.xyz,1);
 
-gl_FragDepth = dpth/far;
+gl_FragDepth = dpth/FAR_PLANE;
 return;
 
 
@@ -710,7 +710,7 @@ gl_FragDepth=0;
 
 
 
-	glBegin(GL_POLYGON);
+	glBegin(GL_TRIANGLES);
 		glVertex2f(subject.a.x,subject.a.y);
 		glVertex2f(subject.b.x, subject.b.y);
 		glVertex2f(subject.c.x, subject.c.y);

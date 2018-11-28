@@ -7,7 +7,10 @@
 #include <mazegen.h>
 #include <ctime>
 #include <mys_model.h>
+#include <mys_fileoperations.h>
+#include <string>
 using namespace mys;
+using namespace mys_fileoperations;
 std::vector<mys::triangle3> StaticTriangles;
 std::vector<mys::vec3> StaticTriangleColors;
 std::vector<mys::segment2_flat> walls;
@@ -806,8 +809,11 @@ int main(int argc, char** argv) {
 	shaderuniformlocations.colRGB = glGetUniformLocation(ShaderProgram, "colRGB");
 	shaderuniformlocations.origin = glGetUniformLocation(ShaderProgram, "origin");
 	shaderuniformlocations.normal = glGetUniformLocation(ShaderProgram, "normal");
+	shaderuniformlocations.FAR_PLANE = glGetUniformLocation(ShaderProgram, "FAR_PLANE");
+	shaderuniformlocations.NEAR_PLANE = glGetUniformLocation(ShaderProgram, "NEAR_PLANE");
 	glUniform1f(shaderuniformlocations.focalDistance, defaultCamera.focalDistance);
-
+	glUniform1f(shaderuniformlocations.FAR_PLANE, FAR_PLANE);
+	glUniform1f(shaderuniformlocations.NEAR_PLANE ,NEAR_PLANE);
 
 	//GLuint fs2;
 	//vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -826,6 +832,9 @@ int main(int argc, char** argv) {
 	*/
 
 
+	std::string mysgeoshadersourecode=readfileintostdstring(mysgeoshaderfilepath);
+	std::cout << "This is the geoshader sourcecode:" << std::endl;
+	std::cout << mysgeoshadersourecode << std::endl;
 
 
 	glClearDepth(1.0);

@@ -1,0 +1,10 @@
+#version 430 core
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 3) out;
+uniform float FAR_PLANE;
+uniform float NEAR_PLANE;
+uniform float focalDistance;
+void main(){
+	
+}
+
