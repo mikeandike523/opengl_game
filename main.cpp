@@ -398,9 +398,9 @@ void display() {
 	vec2 pl{ defaultCamera.position.x,defaultCamera.position.z };
 	for (int i = 0;i < coins.size();i++) {
 		coins[i].render();
-		//if(coins[i].enabled)
-	//	if (magnitude(subtract(vec2{ coins[i].position.x,coins[i].position.z },pl)) < COLLECT_RADIUS)
-		//	coins[i].disable();
+		if(coins[i].enabled)
+		if (magnitude(subtract(vec2{ coins[i].position.x,coins[i].position.z },pl)) < COLLECT_RADIUS)
+			coins[i].disable();
 
 	}
 

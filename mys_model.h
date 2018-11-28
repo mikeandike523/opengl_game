@@ -8,7 +8,7 @@ namespace mys_model {
 	}
 	const vec3 MODEL_YELLOW{ 1,1,0.2 };
 	constexpr float cullBuffer = 5;
-	mat3 eulerX(float angle){
+	mat3 eulerX(float angle) {
 		return mat3{
 			1,0,0,
 			0,cos(angle),-sin(angle),
@@ -29,20 +29,20 @@ namespace mys_model {
 		0,0,1
 		};
 	}
-	
+
 	struct yaw_pitch_roll {
 		float yaw, pitch, roll;
 	};
 
 
 	mat3 yaw_pitch_rollMatrix(const yaw_pitch_roll& params) {
-		return multiplyTwoMat3s(multiplyTwoMat3s(eulerY(params.yaw),eulerX(params.pitch)),eulerZ(params.roll));
+		return multiplyTwoMat3s(multiplyTwoMat3s(eulerY(params.yaw), eulerX(params.pitch)), eulerZ(params.roll));
 	}
 
 	struct axes {
 		vec3 i, j, k; //screenright, screentop, depth
 	};
-	
+
 	axes extractRotatedAxes(const mat3& ypr) {
 		return axes{
 		vec3{ypr.entry11,ypr.entry21,ypr.entry31},
@@ -63,105 +63,105 @@ namespace mys_model {
 
 	class mesh {
 	public:
-		int toRebuild=1;
+		int toRebuild = 1;
 		vec3 position;
 		axes currentAxes;
 		yaw_pitch_roll orientation;
 		int canDraw = 0;
 		std::vector<triangle3> composition;
 		std::vector<triangle3> presence;
-		 mesh(vec3 position1, yaw_pitch_roll orientation1) {
-			 position = position1;
-			 orientation = orientation1;
-			 currentAxes = getRotatedAxes(orientation);
+		mesh(vec3 position1, yaw_pitch_roll orientation1) {
+			position = position1;
+			orientation = orientation1;
+			currentAxes = getRotatedAxes(orientation);
 
 		}
 
-		 void move(vec3 delta) {
-			 moveTo(add(position, delta));
-		 }
-		 void rotate(yaw_pitch_roll delta) {
-			 rotateTo(add(orientation,delta));
-		 }
-		 void moveTo(vec3 newPosition) {
-			 position = newPosition;
-			 toRebuild = 1;
-		 }
-		 void rotateTo(yaw_pitch_roll newOrientation) {
-			 orientation = newOrientation;
-			 currentAxes = getRotatedAxes(newOrientation);
-			 toRebuild = 1;
-		 }
-		 float cullRadius = 0;
-		 void determineCullRadius() {
-			 cullRadius = 0;
-			 for (int i = 0;i < composition.size();i++) {
-				
-				 if (magnitude(composition[i].a) > cullRadius)
-					 cullRadius = magnitude((composition[i].a));
-				 if (magnitude(composition[i].b) > cullRadius)
-					 cullRadius = magnitude((composition[i].b));
-				 if (magnitude(composition[i].c) > cullRadius)
-					 cullRadius = magnitude((composition[i].c));
+		void move(vec3 delta) {
+			moveTo(add(position, delta));
+		}
+		void rotate(yaw_pitch_roll delta) {
+			rotateTo(add(orientation, delta));
+		}
+		void moveTo(vec3 newPosition) {
+			position = newPosition;
+			toRebuild = 1;
+		}
+		void rotateTo(yaw_pitch_roll newOrientation) {
+			orientation = newOrientation;
+			currentAxes = getRotatedAxes(newOrientation);
+			toRebuild = 1;
+		}
+		float cullRadius = 0;
+		void determineCullRadius() {
+			cullRadius = 0;
+			for (int i = 0;i < composition.size();i++) {
+
+				if (magnitude(composition[i].a) > cullRadius)
+					cullRadius = magnitude((composition[i].a));
+				if (magnitude(composition[i].b) > cullRadius)
+					cullRadius = magnitude((composition[i].b));
+				if (magnitude(composition[i].c) > cullRadius)
+					cullRadius = magnitude((composition[i].c));
 
 
 
-			 }
-		 }
-		 void rebuild(int forcebuild = 0) {
-			
-		 }
-		 int cullModel() {
-			 vec3 rp = getRelPos(defaultCamera,position);
-			
-			 if (rp.z + cullRadius + cullBuffer < 0)
-				 return 0;
+			}
+		}
+		void rebuild(int forcebuild = 0) {
 
-			 if (magnitude(rp)- cullRadius - cullBuffer>FAR_PLANE)
-				 return 0;
-			 float rad2d = (cullRadius + cullBuffer)*defaultCamera.focalDistance / rp.z;
-			 vec2 rp2d = perspectiveProject(rp, defaultCamera.focalDistance);
-			 if (rp2d.x - rad2d > clipAreaXRight || rp2d.x + rad2d<clipAreaXLeft || rp2d.y - rad2d>clipAreaYTop || rp2d.y + rad2d < clipAreaYBottom)
+		}
+		int cullModel() {
+			vec3 rp = getRelPos(defaultCamera, position);
+
+			if (rp.z + cullRadius + cullBuffer < 0)
 				return 0;
-			 return 1;
-		 }
 
-		 int enabled = 1;
-		 void disable() {
-			 enabled = 0;
-		 }
-		 void enable() {
-			 enabled = 1;
-		 }
-		 int determinedcr = 0;
-		 void render() {
-			 if (!determinedcr) {
-				 determineCullRadius();
-				 determinedcr = 1;
-			 }
-			 glUniform3f(shaderuniformlocations.MESH_ORIG, position.x, position.y, position.z);
-			 glUniform3f(shaderuniformlocations.MESH_YPR, orientation.yaw, orientation.pitch, orientation.roll);
-			 if (!enabled)
-				 return;
-			
-			
+			if (magnitude(rp) - cullRadius - cullBuffer > FAR_PLANE)
+				return 0;
+			float rad2d = (cullRadius + cullBuffer)*defaultCamera.focalDistance / rp.z;
+			vec2 rp2d = perspectiveProject(rp, defaultCamera.focalDistance);
+			if (rp2d.x - rad2d > clipAreaXRight || rp2d.x + rad2d<clipAreaXLeft || rp2d.y - rad2d>clipAreaYTop || rp2d.y + rad2d < clipAreaYBottom)
+				return 0;
+			return 1;
+		}
+
+		int enabled = 1;
+		void disable() {
+			enabled = 0;
+		}
+		void enable() {
+			enabled = 1;
+		}
+		int determinedcr = 0;
+		void render() {
+			if (!determinedcr) {
+				determineCullRadius();
+				determinedcr = 1;
+			}
+			glUniform3f(shaderuniformlocations.MESH_ORIG, position.x, position.y, position.z);
+			glUniform3f(shaderuniformlocations.MESH_YPR, orientation.yaw, orientation.pitch, orientation.roll);
+			if (!enabled)
+				return;
+
+
 			// if (canDraw) {
 				//rebuild();
-				 if (cullModel())
+			if (cullModel())
 				for (int i = 0;i < composition.size();i++) {
 					fastRenderTriangle3(composition[i], MODEL_YELLOW);
 				}
-				 /*
-				 else {
-					 for (int i = 0;i < composition.size();i++) {
-						 fastRenderTriangle3(composition[i], vec3{1,0,0});
-					 }
-				 }*/
+			/*
+			else {
+				for (int i = 0;i < composition.size();i++) {
+					fastRenderTriangle3(composition[i], vec3{1,0,0});
+				}
+			}*/
 
-			 
-		
-		 }
-		 
+
+
+		}
+
 
 
 
@@ -177,11 +177,11 @@ namespace mys_model {
 		}
 
 	}
-	
+
 	void makeCoin(mesh& m) {
 		for (int i = 0;i < 12;i++) {
 			float a = (float)2 * M_PI*(float)i / (float)12;
-			float ap1 = (float)2 * M_PI*(float)(i+1) / (float)12;
+			float ap1 = (float)2 * M_PI*(float)(i + 1) / (float)12;
 			float x1 = 25 * cos(a);
 			float y1 = 25 * sin(a);
 			float x2 = 25 * cos(ap1);
@@ -190,11 +190,11 @@ namespace mys_model {
 			vec3 br{ x1,y1,-5 };
 			vec3 fl{ x2,y2,5 };
 			vec3 bl{ x2,y2,-5 };
-			m.composition.push_back(newTriangle3(fl,fr,br));
-			m.composition.push_back(newTriangle3(fl,bl,br ));
-			m.composition.push_back(newTriangle3(vec3{0,0,-5},br,bl ));
-			m.composition.push_back(newTriangle3(vec3{0,0,5},fr,fl ));
-			
+			m.composition.push_back(newTriangle3(fl, fr, br));
+			m.composition.push_back(newTriangle3(fl, bl, br));
+			m.composition.push_back(newTriangle3(vec3{ 0,0,-5 }, br, bl));
+			m.composition.push_back(newTriangle3(vec3{ 0,0,5 }, fr, fl));
+
 		}
 
 
