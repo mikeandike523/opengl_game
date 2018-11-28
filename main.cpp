@@ -843,7 +843,6 @@ int main(int argc, char** argv) {
 
 	glLinkProgram(ShaderProgram);
 	glUseProgram(ShaderProgram);
-	initgeoshader();
 	shaderuniformlocations.focalDistance = glGetUniformLocation(ShaderProgram, "focalDistance");
 	shaderuniformlocations.w = glGetUniformLocation(ShaderProgram, "w");
 	shaderuniformlocations.h = glGetUniformLocation(ShaderProgram, "h");

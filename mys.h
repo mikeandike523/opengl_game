@@ -747,21 +747,7 @@ gl_FragDepth=0;
 
 
 	}
-	float points[9];
-	void initgeoshader() {
-		GLuint vbo;
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		GLuint vao;
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
 
-		// Specify layout of point data
-		GLint posAttrib = glGetAttribLocation(ShaderProgram, "pos");
-		glEnableVertexAttribArray(posAttrib);
-		glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-	}
 	void fastRenderTriangle3(const triangle3& parent, const vec3& color) {
 
 
@@ -776,25 +762,14 @@ gl_FragDepth=0;
 
 		glUniform3f(shaderuniformlocations.normal, parent.normal.x, parent.normal.y, parent.normal.z);
 
-
-		points[0] = parent.a.x;
-		points[1] = parent.a.y;
-		points[2] = parent.a.z;
-
-		points[3] = parent.b.x;
-		points[4] = parent.b.y;
-		points[5] = parent.b.z;
-		
-
-		points[6] = parent.c.x;
-		points[7] = parent.c.y;
-		points[8] = parent.c.z;
+		glBegin(GL_TRIANGLES);
+			glVertex3f(parent.a.x,parent.a.y,parent.a.z);
+			glVertex3f(parent.b.x, parent.b.y, parent.b.z);
+			glVertex3f(parent.c.x, parent.c.y, parent.c.z);
 
 
 
-	
-		glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+			glEnd();
 
 
 
