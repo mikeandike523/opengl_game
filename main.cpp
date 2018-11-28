@@ -604,6 +604,34 @@ void setRoomOpen(vec2_i rm, int roomRad, int* rooms) {
 void cleanup() {
 
 }
+int createShader(GLint type, const std::string source) {
+	GLuint shd;
+	shd = glCreateShader(type);
+	const GLcharARB* src = source.c_str();
+	glShaderSourceARB(shd, 1, &src ,nullptr);
+
+
+	glCompileShaderARB(shd);
+
+
+	GLint success = 0;
+	glGetShaderiv(shd, GL_COMPILE_STATUS, &success);
+	if (!success) {
+
+		GLint maxLength = 0;
+		glGetShaderiv(shd, GL_INFO_LOG_LENGTH, &maxLength);
+
+		// The maxLength includes the NULL character
+		std::vector<GLchar> errorLog(maxLength);
+		glGetShaderInfoLog(shd, maxLength, &maxLength, &errorLog[0]);
+		for (int i = 0;i < errorLog.size();i++) {
+			printf("%c", errorLog[i]);
+		}
+
+
+	}
+	return shd;
+}
 /* Main function: GLUT runs as a console application starting at main() */
 int main(int argc, char** argv) {
 
@@ -799,8 +827,23 @@ int main(int argc, char** argv) {
 	glAttachShader(ShaderProgram, vertexShader);
 	glAttachShader(ShaderProgram, fragmentShader);
 
+
+
+	std::string mysgeoshadersourecode = readfileintostdstring(mysgeoshaderfilepath);
+	std::cout << "This is the geoshader sourcecode:" << std::endl;
+	std::cout << mysgeoshadersourecode << std::endl;
+
+
+	GLuint geometryShader = createShader(GL_GEOMETRY_SHADER, mysgeoshadersourecode);
+
+
+	glAttachShader(ShaderProgram, geometryShader);
+	
+
+
 	glLinkProgram(ShaderProgram);
 	glUseProgram(ShaderProgram);
+	initgeoshader();
 	shaderuniformlocations.focalDistance = glGetUniformLocation(ShaderProgram, "focalDistance");
 	shaderuniformlocations.w = glGetUniformLocation(ShaderProgram, "w");
 	shaderuniformlocations.h = glGetUniformLocation(ShaderProgram, "h");
@@ -815,26 +858,7 @@ int main(int argc, char** argv) {
 	glUniform1f(shaderuniformlocations.FAR_PLANE, FAR_PLANE);
 	glUniform1f(shaderuniformlocations.NEAR_PLANE ,NEAR_PLANE);
 
-	//GLuint fs2;
-	//vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	//fs2= glCreateShader(GL_FRAGMENT_SHADER);
 
-	//glShaderSourceARB(vertexShader, 1, &mys::vertex_shader, nullptr);
-	/*
-	glShaderSourceARB(fs2, 1, &mys::scpfs, nullptr);
-	glCompileShaderARB(fs2);
-	scp = glCreateProgram();
-
-	glAttachShader(scp, vertexShader);
-	glAttachShader(scp, fs2);
-
-	glLinkProgram(scp);
-	*/
-
-
-	std::string mysgeoshadersourecode=readfileintostdstring(mysgeoshaderfilepath);
-	std::cout << "This is the geoshader sourcecode:" << std::endl;
-	std::cout << mysgeoshadersourecode << std::endl;
 
 
 	glClearDepth(1.0);
@@ -846,6 +870,8 @@ int main(int argc, char** argv) {
 	//std::cout << crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).x<<","<< crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).y <<","<< crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).z << std::endl;
 
 	glutDisplayFunc(display);     // Register callback handler for window re-paint
+
+	
 	glutReshapeFunc(reshape);     // Register callback handler for window re-shape
 	//glutTimerFunc(0, Timer, 0);   // First timer call immediately
 	glutSpecialFunc(specialKeys); // Register callback handler for special-key event

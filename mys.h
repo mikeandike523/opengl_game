@@ -682,6 +682,7 @@ gl_FragDepth=0;
 
 		return toShow;
 	}
+
 	void triangle2CullAndClipOutsideWindowAndRender(const triangle2& subject,float left, float right, float top, float bottom,const vec3& color,const triangle3& parent,float focalDistance) {
 
 
@@ -711,9 +712,9 @@ gl_FragDepth=0;
 
 
 	glBegin(GL_TRIANGLES);
-		glVertex2f(subject.a.x,subject.a.y);
-		glVertex2f(subject.b.x, subject.b.y);
-		glVertex2f(subject.c.x, subject.c.y);
+		glVertex3f(subject.a.x,subject.a.y,0);
+		glVertex3f(subject.b.x, subject.b.y,0);
+		glVertex3f(subject.c.x, subject.c.y,0);
 		glEnd();
 		/*
 		glUseProgram(scp);
@@ -746,6 +747,81 @@ gl_FragDepth=0;
 
 
 	}
+	float points[9];
+	void initgeoshader() {
+		GLuint vbo;
+		glGenBuffers(1, &vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		GLuint vao;
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
+		// Specify layout of point data
+		GLint posAttrib = glGetAttribLocation(ShaderProgram, "pos");
+		glEnableVertexAttribArray(posAttrib);
+		glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	}
+	void fastRenderTriangle3(const triangle3& parent, const vec3& color) {
+
+
+		glUniform3f(shaderuniformlocations.colRGB, color.x, color.y, color.z);
+
+
+
+		glUniform3f(shaderuniformlocations.origin, parent.c.x, parent.c.y, parent.c.z);
+
+
+
+
+		glUniform3f(shaderuniformlocations.normal, parent.normal.x, parent.normal.y, parent.normal.z);
+
+
+		points[0] = parent.a.x;
+		points[1] = parent.a.y;
+		points[2] = parent.a.z;
+
+		points[3] = parent.b.x;
+		points[4] = parent.b.y;
+		points[5] = parent.b.z;
+		
+
+		points[6] = parent.c.x;
+		points[7] = parent.c.y;
+		points[8] = parent.c.z;
+
+
+
+	
+		glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
+
+
+
+
+
+
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	const vec2_i dirs[]{ vec2_i{1,0},vec2_i{0,1},vec2_i{-1,0},vec2_i{0,-1} };
 	const int opdirs[]{WEST,SOUTH,EAST,NORTH};

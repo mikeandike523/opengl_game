@@ -5,6 +5,14 @@ uniform float FAR_PLANE;
 uniform float NEAR_PLANE;
 uniform float focalDistance;
 void main(){
-	
+	int i;
+
+    for (i = 0; i < gl_in.length(); i++)
+    {
+        gl_Position = gl_in[i].gl_Position;
+		//gl_Position.x*=-1;
+        EmitVertex();
+    }
+    EndPrimitive();
 }
 
