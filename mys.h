@@ -27,7 +27,7 @@ namespace mys {
 	GLint scp;
 	GLint mysgeoshader;
 	struct shaderuniformlocationstorage {
-		GLint w, h,colRGB, origin,normal,top,right,focalDistance,FAR_PLANE,NEAR_PLANE,CAMERA_YPR,CAMERA_POS;
+		GLint w, h,colRGB, origin,normal,top,right,focalDistance,FAR_PLANE,NEAR_PLANE,CAMERA_YPR,CAMERA_POS,STANDARD_EPSILON;
 
 	} shaderuniformlocations;
 	

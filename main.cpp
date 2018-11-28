@@ -366,8 +366,6 @@ void display() {
 
 	}
 
-	//mys::rotMatrix=makeRotationMatrixForXZAndZYOnly(M_PI_2 - defaultCamera.angleXZ, -defaultCamera.angleZY);
-
 
 
 
@@ -389,46 +387,26 @@ void display() {
 	glLoadIdentity();              // Reset model-view matrix
 
 
-//	std::cout <<clipAreaYTop<<","<<clipAreaYBottom<< std::endl;
 
-
-//draw here
 	for (int i = 0;i < StaticTriangles.size();i++) {
-		/*
-		mys::triangle3 T = mys::adjustTriangle3ToCamera(defaultCamera, StaticTriangles[i]);
-		mys::triangle3 result1;
-		mys::triangle3 result2;
-		int oneOrTwoTriangles;
-		mys::vec3 col = StaticTriangleColors[i];
-		if (mys::triangle3CullAndClipBehindNearPlane(T, result1, result2, oneOrTwoTriangles)) {
-			if (oneOrTwoTriangles == 1) {
-				mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, col, result1, defaultCamera.focalDistance);
-			}
 
-			if (oneOrTwoTriangles == 2) {
-
-				mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, col, result1, defaultCamera.focalDistance);
-				mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result2, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, col, result2, defaultCamera.focalDistance);
-			}
-		}
-		*/
 		fastRenderTriangle3(StaticTriangles[i],StaticTriangleColors[i]);
 
 	}
-	/*
+	
 	vec2 pl{ defaultCamera.position.x,defaultCamera.position.z };
 	for (int i = 0;i < coins.size();i++) {
 		coins[i].render();
 		if(coins[i].enabled)
 		if (magnitude(subtract(vec2{ coins[i].position.x,coins[i].position.z },pl)) < COLLECT_RADIUS)
 			coins[i].disable();
-	//	std::cout << coins[i].presence.size()<<std::endl;
+
 	}
 
 	for (int i = 0;i < coins.size();i++) {
 		if(coins[i].enabled)
 		coins[i].rotate(mys_model::yaw_pitch_roll{M_PI_4/(float)32,0,0});
-	}*/
+	}
 
 
 
@@ -860,10 +838,11 @@ int main(int argc, char** argv) {
 	shaderuniformlocations.NEAR_PLANE = glGetUniformLocation(ShaderProgram, "NEAR_PLANE");
 	shaderuniformlocations.CAMERA_POS = glGetUniformLocation(ShaderProgram, "CAMERA_POS");
 	shaderuniformlocations.CAMERA_YPR= glGetUniformLocation(ShaderProgram, "CAMERA_YPR");
+	shaderuniformlocations.STANDARD_EPSILON = glGetUniformLocation(ShaderProgram, "STANDARD_EPSILON");
 	glUniform1f(shaderuniformlocations.focalDistance, defaultCamera.focalDistance);
 	glUniform1f(shaderuniformlocations.FAR_PLANE, FAR_PLANE);
 	glUniform1f(shaderuniformlocations.NEAR_PLANE ,NEAR_PLANE);
-
+	glUniform1f(shaderuniformlocations.STANDARD_EPSILON, STANDARD_EPSILON);
 
 
 

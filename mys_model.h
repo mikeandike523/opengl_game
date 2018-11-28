@@ -169,28 +169,12 @@ namespace mys_model {
 			// if (canDraw) {
 				rebuild();
 				
-				 for (int i = 0;i < presence.size();i++) {
-					 triangle3 T = adjustTriangle3ToCamera(defaultCamera,presence[i]);
-					 mys::triangle3 result1;
-					 mys::triangle3 result2;
-					 int oneOrTwoTriangles;
-	
-					 if (mys::triangle3CullAndClipBehindNearPlane(T, result1, result2, oneOrTwoTriangles)) {
-						 if (oneOrTwoTriangles == 1) {
-							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_YELLOW, result1, defaultCamera.focalDistance);
-						 }
-
-						 if (oneOrTwoTriangles == 2) {
-
-							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result1, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_YELLOW, result1, defaultCamera.focalDistance);
-							 mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result2, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, MODEL_YELLOW, result2, defaultCamera.focalDistance);
-						 }
-					 }
-					 
-				 }
+				for (int i = 0;i < presence.size();i++) {
+					fastRenderTriangle3(presence[i], MODEL_YELLOW);
+				}
 
 			 
-			 //}
+		
 		 }
 		 
 
