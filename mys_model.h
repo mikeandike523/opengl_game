@@ -3,6 +3,9 @@
 
 using namespace mys;
 namespace mys_model {
+	void useMeshSubCoords() {
+		glUniform1i(shaderuniformlocations.USE_MESH_COORDS, 1);
+	}
 	const vec3 MODEL_YELLOW{ 1,1,0.2 };
 	constexpr float cullBuffer = 5;
 	mat3 eulerX(float angle){
@@ -65,7 +68,7 @@ namespace mys_model {
 		axes currentAxes;
 		yaw_pitch_roll orientation;
 		int canDraw = 0;
-		std::vector<triangle3NoNormal> composition;
+		std::vector<triangle3> composition;
 		std::vector<triangle3> presence;
 		 mesh(vec3 position1, yaw_pitch_roll orientation1) {
 			 position = position1;
@@ -91,66 +94,35 @@ namespace mys_model {
 		 }
 		 float cullRadius = 0;
 		 void determineCullRadius() {
+			 cullRadius = 0;
 			 for (int i = 0;i < composition.size();i++) {
-				 vec3 p1 = add(scalarMultiply(composition[i].a.x, currentAxes.i), add(scalarMultiply(composition[i].a.y, currentAxes.j)
-					 , scalarMultiply(composition[i].a.z, currentAxes.k)));
-				 vec3 p2 = add(scalarMultiply(composition[i].b.x, currentAxes.i), add(scalarMultiply(composition[i].b.y, currentAxes.j)
-					 , scalarMultiply(composition[i].b.z, currentAxes.k)));
-
-				 vec3 p3 = add(scalarMultiply(composition[i].c.x, currentAxes.i), add(scalarMultiply(composition[i].c.y, currentAxes.j),
-					 scalarMultiply(composition[i].c.z, currentAxes.k)));
-				 if (magnitude(p1) > cullRadius)
-					 cullRadius = magnitude(p1);
-				 if (magnitude(p2) > cullRadius)
-					 cullRadius = magnitude(p2);
-				 if (magnitude(p3) > cullRadius)
-					 cullRadius = magnitude(p3);
+				
+				 if (magnitude(composition[i].a) > cullRadius)
+					 cullRadius = magnitude((composition[i].a));
+				 if (magnitude(composition[i].b) > cullRadius)
+					 cullRadius = magnitude((composition[i].b));
+				 if (magnitude(composition[i].c) > cullRadius)
+					 cullRadius = magnitude((composition[i].c));
 
 
 
 			 }
 		 }
 		 void rebuild(int forcebuild = 0) {
-			 if (toRebuild||forcebuild) {
-				 //write code here
-				 presence.clear();
-				// std::cout << position.x << std::endl;
-				 for (int i = 0;i < composition.size();i++) {
-					 vec3 p1 = add(scalarMultiply(composition[i].a.x, currentAxes.i), add(scalarMultiply(composition[i].a.y, currentAxes.j)
-						 , scalarMultiply(composition[i].a.z, currentAxes.k))) ;
-					 vec3 p2 = add(scalarMultiply(composition[i].b.x, currentAxes.i), add(scalarMultiply(composition[i].b.y, currentAxes.j)
-						 , scalarMultiply(composition[i].b.z, currentAxes.k)));
-
-					 vec3 p3 = add(scalarMultiply(composition[i].c.x, currentAxes.i), add(scalarMultiply(composition[i].c.y, currentAxes.j),
-						 scalarMultiply(composition[i].c.z, currentAxes.k)));
-					 presence.push_back(newTriangle3(
-						 add(p1, position),
-						 add(p2, position),
-						 add(p3, position)
-
-
-						 
-						 
-						 
-					 )
-
-					 );
-				 }
-				 toRebuild = 0;
-			 }
-			// canDraw = 1;
+			
 		 }
 		 int cullModel() {
 			 vec3 rp = getRelPos(defaultCamera,position);
+			
 			 if (rp.z + cullRadius + cullBuffer < 0)
 				 return 0;
 
-			 if (rp.z - cullRadius - cullBuffer > FAR_PLANE)
+			 if (magnitude(rp)- cullRadius - cullBuffer>FAR_PLANE)
 				 return 0;
 			 float rad2d = (cullRadius + cullBuffer)*defaultCamera.focalDistance / rp.z;
 			 vec2 rp2d = perspectiveProject(rp, defaultCamera.focalDistance);
 			 if (rp2d.x - rad2d > clipAreaXRight || rp2d.x + rad2d<clipAreaXLeft || rp2d.y - rad2d>clipAreaYTop || rp2d.y + rad2d < clipAreaYBottom)
-				 return 0;
+				return 0;
 			 return 1;
 		 }
 
@@ -161,17 +133,30 @@ namespace mys_model {
 		 void enable() {
 			 enabled = 1;
 		 }
+		 int determinedcr = 0;
 		 void render() {
+			 if (!determinedcr) {
+				 determineCullRadius();
+				 determinedcr = 1;
+			 }
+			 glUniform3f(shaderuniformlocations.MESH_ORIG, position.x, position.y, position.z);
+			 glUniform3f(shaderuniformlocations.MESH_YPR, orientation.yaw, orientation.pitch, orientation.roll);
 			 if (!enabled)
 				 return;
-			 if (!cullModel())
-				 return;
+			
+			
 			// if (canDraw) {
-				rebuild();
-				
-				for (int i = 0;i < presence.size();i++) {
-					fastRenderTriangle3(presence[i], MODEL_YELLOW);
+				//rebuild();
+				 if (cullModel())
+				for (int i = 0;i < composition.size();i++) {
+					fastRenderTriangle3(composition[i], MODEL_YELLOW);
 				}
+				 /*
+				 else {
+					 for (int i = 0;i < composition.size();i++) {
+						 fastRenderTriangle3(composition[i], vec3{1,0,0});
+					 }
+				 }*/
 
 			 
 		
@@ -205,10 +190,11 @@ namespace mys_model {
 			vec3 br{ x1,y1,-5 };
 			vec3 fl{ x2,y2,5 };
 			vec3 bl{ x2,y2,-5 };
-			m.composition.push_back(triangle3NoNormal{fl,fr,br});
-			m.composition.push_back(triangle3NoNormal{ fl,bl,br });
-			m.composition.push_back(triangle3NoNormal{ vec3{0,0,-5},br,bl });
-			m.composition.push_back(triangle3NoNormal{ vec3{0,0,5},fr,fl });
+			m.composition.push_back(newTriangle3(fl,fr,br));
+			m.composition.push_back(newTriangle3(fl,bl,br ));
+			m.composition.push_back(newTriangle3(vec3{0,0,-5},br,bl ));
+			m.composition.push_back(newTriangle3(vec3{0,0,5},fr,fl ));
+			
 		}
 
 

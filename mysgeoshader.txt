@@ -228,7 +228,7 @@ out vec3 orig;
 	}
 
 	mat3 camRotMatrix(){
-		return eulerY(CAMERA_YPR.x);
+		return eulerY(-(M_PI/2-CAMERA_YPR.x));
 	}
 	vec2 projPoint(vec3 pt){
 		return focalDistance/pt.z*pt.xy;
@@ -361,11 +361,11 @@ void main(){
 	
 	mat3 crm = camRotMatrix();
 	
-        vec3 trA = crm*(gl_in[0].gl_Position.xyz-vec3(-CAMERA_POS.z,CAMERA_POS.y,CAMERA_POS.x));
+        vec3 trA = crm*(gl_in[0].gl_Position.xyz-CAMERA_POS);
 		
-        vec3 trB =crm*(gl_in[1].gl_Position.xyz-vec3(-CAMERA_POS.z,CAMERA_POS.y,CAMERA_POS.x));
+        vec3 trB =crm*(gl_in[1].gl_Position.xyz-CAMERA_POS);
 	
-        vec3 trC = crm*(gl_in[2].gl_Position.xyz-vec3(-CAMERA_POS.z,CAMERA_POS.y,CAMERA_POS.x));
+        vec3 trC = crm*(gl_in[2].gl_Position.xyz-CAMERA_POS);
 	
 	
  rendTr(trA,trB,trC);

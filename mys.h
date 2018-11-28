@@ -27,13 +27,36 @@ namespace mys {
 	GLint scp;
 	GLint mysgeoshader;
 	struct shaderuniformlocationstorage {
-		GLint w, h,colRGB, origin,normal,top,right,focalDistance,FAR_PLANE,NEAR_PLANE,CAMERA_YPR,CAMERA_POS,STANDARD_EPSILON;
+		GLint w, h,colRGB, origin,normal,top,right,focalDistance,FAR_PLANE,NEAR_PLANE,CAMERA_YPR,CAMERA_POS,STANDARD_EPSILON,USE_MESH_COORDS,MESH_ORIG,MESH_YPR;
 
 	} shaderuniformlocations;
 	
 	const char* vertex_shader = R"(
-
-
+#version 420 compatibility
+uniform int USE_MESH_COORDS;
+uniform vec3 MESH_ORIG;
+uniform vec3 MESH_YPR;
+	mat3 eulerX(float angle){
+		return transpose(mat3(
+			1,0,0,
+			0,cos(angle),-sin(angle),
+			0,sin(angle),cos(angle)
+		));
+	}
+	mat3 eulerY(float angle) {
+		return transpose(mat3(
+			cos(angle),0,sin(angle),
+			0,1,0,
+			-sin(angle),0,cos(angle)
+		));
+	}
+	mat3 eulerZ(float angle) {
+		return transpose(mat3(
+		cos(angle),-sin(angle),0,
+		sin(angle),cos(angle),0,
+		0,0,1
+		));
+	}
 
 
 
@@ -42,7 +65,14 @@ namespace mys {
 void main()
 {
 //   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+if(USE_MESH_COORDS==0)
 gl_Position=gl_Vertex;
+else{
+	float w = gl_Vertex.w;
+	vec3 v =gl_Vertex.xyz;
+	v=MESH_ORIG+eulerZ(MESH_YPR.z)*eulerX(MESH_YPR.y)*eulerY(MESH_YPR.x)*v;
+	gl_Position=vec4(v,w);
+}
     
 }
 

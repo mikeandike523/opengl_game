@@ -98,7 +98,7 @@ void display() {
 	current_ticks = glutGet(GLUT_ELAPSED_TIME);
 	glUniform3f(shaderuniformlocations.CAMERA_POS, defaultCamera.position.x, defaultCamera.position.y, defaultCamera.position.z);
 	glUniform3f(shaderuniformlocations.CAMERA_YPR, defaultCamera.angleXZ, defaultCamera.angleZY,0);
-
+	rotMatrix = makeRotationMatrixForXZAndZYOnly(M_PI_2-defaultCamera.angleXZ,- defaultCamera.angleZY);
 	/*
 	GLint m_viewport[4];
 
@@ -357,8 +357,8 @@ void display() {
 
 			}
 		}
-		defaultCamera.position.x = nx;
-		defaultCamera.position.z = nz;
+		defaultCamera.position.x = nnx;
+		defaultCamera.position.z = nnz;
 
 
 
@@ -386,20 +386,21 @@ void display() {
 	glMatrixMode(GL_MODELVIEW);    // To operate on the model-view matrix
 	glLoadIdentity();              // Reset model-view matrix
 
-
+	glUniform1i(shaderuniformlocations.USE_MESH_COORDS, 0);
 
 	for (int i = 0;i < StaticTriangles.size();i++) {
 
 		fastRenderTriangle3(StaticTriangles[i],StaticTriangleColors[i]);
 
 	}
-	/*
+	mys_model::useMeshSubCoords();
+	
 	vec2 pl{ defaultCamera.position.x,defaultCamera.position.z };
 	for (int i = 0;i < coins.size();i++) {
 		coins[i].render();
-		if(coins[i].enabled)
-		if (magnitude(subtract(vec2{ coins[i].position.x,coins[i].position.z },pl)) < COLLECT_RADIUS)
-			coins[i].disable();
+		//if(coins[i].enabled)
+	//	if (magnitude(subtract(vec2{ coins[i].position.x,coins[i].position.z },pl)) < COLLECT_RADIUS)
+		//	coins[i].disable();
 
 	}
 
@@ -407,7 +408,7 @@ void display() {
 		if(coins[i].enabled)
 		coins[i].rotate(mys_model::yaw_pitch_roll{M_PI_4/(float)32,0,0});
 	}
-	*/
+	
 
 
 	glutSwapBuffers();  // Swap front and back buffers (of double buffered mode)
@@ -805,6 +806,25 @@ int main(int argc, char** argv) {
 
 
 	}
+
+	 success = 0;
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+
+		GLint maxLength = 0;
+		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
+
+		// The maxLength includes the NULL character
+		std::vector<GLchar> errorLog(maxLength);
+		glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &errorLog[0]);
+		for (int i = 0;i < errorLog.size();i++) {
+			printf("%c", errorLog[i]);
+		}
+
+
+	}
+
+
 	ShaderProgram = glCreateProgram();
 
 	glAttachShader(ShaderProgram, vertexShader);
@@ -813,8 +833,8 @@ int main(int argc, char** argv) {
 
 
 	std::string mysgeoshadersourecode = readfileintostdstring(mysgeoshaderfilepath);
-	std::cout << "This is the geoshader sourcecode:" << std::endl;
-	std::cout << mysgeoshadersourecode << std::endl;
+//	std::cout << "This is the geoshader sourcecode:" << std::endl;
+//	std::cout << mysgeoshadersourecode << std::endl;
 
 
 	GLuint geometryShader = createShader(GL_GEOMETRY_SHADER, mysgeoshadersourecode);
@@ -839,6 +859,9 @@ int main(int argc, char** argv) {
 	shaderuniformlocations.CAMERA_POS = glGetUniformLocation(ShaderProgram, "CAMERA_POS");
 	shaderuniformlocations.CAMERA_YPR= glGetUniformLocation(ShaderProgram, "CAMERA_YPR");
 	shaderuniformlocations.STANDARD_EPSILON = glGetUniformLocation(ShaderProgram, "STANDARD_EPSILON");
+	shaderuniformlocations.USE_MESH_COORDS = glGetUniformLocation(ShaderProgram, "USE_MESH_COORDS");
+	shaderuniformlocations.MESH_ORIG = glGetUniformLocation(ShaderProgram, "MESH_ORIG");
+	shaderuniformlocations.MESH_YPR = glGetUniformLocation(ShaderProgram, "MESH_YPR");
 	glUniform1f(shaderuniformlocations.focalDistance, defaultCamera.focalDistance);
 	glUniform1f(shaderuniformlocations.FAR_PLANE, FAR_PLANE);
 	glUniform1f(shaderuniformlocations.NEAR_PLANE ,NEAR_PLANE);
