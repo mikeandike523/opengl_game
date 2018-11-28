@@ -393,7 +393,7 @@ void display() {
 		fastRenderTriangle3(StaticTriangles[i],StaticTriangleColors[i]);
 
 	}
-	
+	/*
 	vec2 pl{ defaultCamera.position.x,defaultCamera.position.z };
 	for (int i = 0;i < coins.size();i++) {
 		coins[i].render();
@@ -407,7 +407,7 @@ void display() {
 		if(coins[i].enabled)
 		coins[i].rotate(mys_model::yaw_pitch_roll{M_PI_4/(float)32,0,0});
 	}
-
+	*/
 
 
 	glutSwapBuffers();  // Swap front and back buffers (of double buffered mode)
@@ -658,7 +658,7 @@ int main(int argc, char** argv) {
 		}
 
 
-	/*
+	
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 		StaticTriangleColors.push_back(vec3{ 0,0,1 });
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 - 150)} });
@@ -669,7 +669,7 @@ int main(int argc, char** argv) {
 		StaticTriangleColors.push_back(vec3{ 0,1,0 });
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + -150),(float)50,(float)(rmloc.y * 300 - 150)} });
 		StaticTriangleColors.push_back(vec3{ 0,1,0 });
-		*/
+		
 		if (abs(roomOccupation(vec2_i{ rmloc.x + 1,rmloc.y }, roomRad, rooms) == 1)) {
 
 			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)} });

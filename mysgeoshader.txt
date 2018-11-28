@@ -1,7 +1,7 @@
 #version 420 compatibility
 #define M_PI 3.1415926535897932384626433832795
 layout(triangles) in;
-layout(triangle_strip, max_vertices = 3) out;
+layout(triangle_strip, max_vertices = 6) out;
 uniform float FAR_PLANE;
 uniform float NEAR_PLANE;
 uniform float focalDistance;
@@ -239,8 +239,80 @@ out vec3 orig;
 
 
 
-int near_cut(vec3 i1, vec3 i2, vec3 i3,inout vec3 a1, inout vec3 a2, inout vec3 a3, inout vec3 b1, inout vec3 b2, inout vec3 b3) {
+int near_cut( vec3 i1, vec3 i2, vec3 i3,inout vec3 a1, inout vec3 a2, inout vec3 a3, inout vec3 b1, inout vec3 b2, inout vec3 b3) {
 //rest of code works fine, need to write code here
+int sum  = 0;
+if(i1.z>FAR_PLANE&&i2.z>FAR_PLANE&&i3.z>FAR_PLANE)
+return 0;
+bool aisin = (i1.z>NEAR_PLANE);
+if(aisin)
+sum=sum+1;
+bool bisin = (i2.z>NEAR_PLANE);
+if(bisin)
+sum=sum+1;
+bool cisin = (i3.z>NEAR_PLANE);
+if(cisin)
+sum=sum+1;
+if(sum==0)
+return 0;
+if(sum==3){
+a1=i1;a2=i2;a3=i3; return 1;
+}
+if(sum==1){
+	if(bisin){
+		vec3 temp = i1;
+		i1=i2;
+		i2=temp;
+	}
+	if(cisin){
+		vec3 temp = i1;
+		i1=i3;
+		i3=temp;
+	}
+	vec3 d1 = i2-i1;
+	vec3 d2 = i3-i1;
+	float t1 = (i1.z)/(i1.z-i2.z+NEAR_PLANE);
+	float t2 = (i1.z)/(i1.z-i3.z+NEAR_PLANE);
+	vec3 c1 = i1+d1*t1;
+	vec3 c2 = i1+d2*t2;
+	a1=i1;
+	a2=c1;
+	a3=c2;
+	return 1;
+}
+if(sum==2){
+		vec3 ni1,ni2,ni3;
+	
+	if(!bisin){
+		vec3 temp = i1;
+		i1=i2;
+		i2=temp;
+	}
+	if(!cisin){
+		vec3 temp = i1;
+		i1=i3;
+		i3=temp;
+	}
+
+		vec3 d1 = i1-i2;
+	vec3 d2 = i1-i3;
+	float t1 = (i2.z)/(i2.z-i1.z+NEAR_PLANE);
+	float t2 = (i3.z)/(i3.z-i1.z+NEAR_PLANE);
+	vec3 c1 = i2+d1*t1;
+	vec3 c2 = i3+d2*t2;
+	a1=i3;
+	a2=c1;
+	a3=c2;
+	b1 = c1;
+	b2= i2;
+   b3=i3;
+
+
+	return 2;
+
+
+}
+
 
 
 
@@ -272,11 +344,15 @@ gl_Position = makeVertex(pt2d3,2);
 	}
 
 	void rendTr(vec3 pt1, vec3 pt2, vec3 pt3){
-		vec3 a1,b1,c1,a2,b2,c2;
-	int numtrs = near_cut(pt1,pt2,pt3,a1,b1,c1,a2,b2,c2);
+		vec3 x1,y1,z1,x2,y2,z2;
+	int numtrs = near_cut(pt1,pt2,pt3,x1,y1,z1,x2,y2,z2);
 
-	if(numtrs==1){
-		rendGoodNPCutTr(pt1,pt2,pt3);
+		if(numtrs==1){
+		rendGoodNPCutTr(x1,y1,z1);
+	}
+	if(numtrs==2){
+		rendGoodNPCutTr(x1,y1,z1);
+			rendGoodNPCutTr(x2,y2,z2);
 	}
 
 	}
