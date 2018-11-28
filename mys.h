@@ -79,7 +79,7 @@ if(dpth>FAR_PLANE)
 return;}
 //color = vec4(vec3(dpth)/FAR_PLANE,1);
 color = vec4(clamp(1-(dpth+50)/FAR_PLANE,0,1)*colRGB.xyz,1);
-
+//color = vec4(1,norm.xy,1);
 gl_FragDepth = dpth/FAR_PLANE;
 return;
 
@@ -716,35 +716,6 @@ gl_FragDepth=0;
 		glVertex3f(subject.b.x, subject.b.y,0);
 		glVertex3f(subject.c.x, subject.c.y,0);
 		glEnd();
-		/*
-		glUseProgram(scp);
-		GLint loc9 = glGetUniformLocation(scp, "colRGB");
-		if (loc9 != -1)
-		{
-			glUniform3f(loc9,1,1,1);
-
-		}*/
-		/*
-		vec3 np = add(parent.a, n);
-		vec2 np2d = perspectiveProject(np,focalDistance);
-		glBegin(GL_LINES);
-		glVertex2f(subject.a.x, subject.a.y);
-		glVertex2f(np2d.x, np2d.y);
-		glEnd();
-
-		glUniform3f(loc9, 0.9, 0.2, 0.8);
-		glBegin(GL_LINES);
-		vec3 np2 = add(parent.a, vec3{0,0,150});
-		vec2 np2d2 = perspectiveProject(np2, focalDistance);
-		glVertex2f(subject.a.x, subject.a.y);
-		glVertex2f(np2d2.x, np2d2.y);
-		glEnd();
-		*/
-
-		
-
-	
-
 
 	}
 
