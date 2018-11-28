@@ -27,14 +27,13 @@ namespace mys {
 	GLint scp;
 	GLint mysgeoshader;
 	struct shaderuniformlocationstorage {
-		GLint w, h,colRGB, origin,normal,top,right,focalDistance,FAR_PLANE,NEAR_PLANE;
+		GLint w, h,colRGB, origin,normal,top,right,focalDistance,FAR_PLANE,NEAR_PLANE,CAMERA_YPR,CAMERA_POS;
 
 	} shaderuniformlocations;
 	
 	const char* vertex_shader = R"(
 
 
-in vec3 a_position;
 
 
 
@@ -42,14 +41,15 @@ in vec3 a_position;
 //the shader entry point is the main method
 void main()
 {
-   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+//   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+gl_Position=gl_Vertex;
     
 }
 
 )";
 	//credit https://stackoverflow.com/a/53349063/5166365 for helping me fix this
 	const char* fragment_shader = R"(
-#version 430 core
+#version 420 compatibility
 uniform vec3 colRGB;
 uniform vec3 origin;
 uniform vec3 normal;
@@ -61,6 +61,8 @@ uniform float top;
 out vec4 color;
 uniform float FAR_PLANE;
 uniform float NEAR_PLANE;
+in vec3 norm;
+in vec3 orig;
 void main()
 {
 float cx =(-1.0+2.0*gl_FragCoord.x/w)*right;
@@ -68,7 +70,7 @@ float cx =(-1.0+2.0*gl_FragCoord.x/w)*right;
 	cx /= focalDistance;
 	cy /= focalDistance;
 	vec3 dirvec = vec3( cx,cy,1 );
-	float t = dot(normal, origin) / dot(normal,dirvec);
+	float t = dot(norm, orig) / dot(norm,dirvec);
 
 		
 		
@@ -79,10 +81,12 @@ if(dpth>FAR_PLANE)
 return;}
 //color = vec4(vec3(dpth)/FAR_PLANE,1);
 color = vec4(clamp(1-(dpth+50)/FAR_PLANE,0,1)*colRGB.xyz,1);
-//color = vec4(1,norm.xy,1);
+
 gl_FragDepth = dpth/FAR_PLANE;
 return;
-
+/*
+color=vec4(colRGB.xyz,1);
+gl_FragDepth = .2;*/
 
 }
      
@@ -712,10 +716,39 @@ gl_FragDepth=0;
 
 
 	glBegin(GL_TRIANGLES);
-		glVertex3f(subject.a.x,subject.a.y,0);
-		glVertex3f(subject.b.x, subject.b.y,0);
-		glVertex3f(subject.c.x, subject.c.y,0);
+		glVertex2f(subject.a.x,subject.a.y);
+		glVertex2f(subject.b.x, subject.b.y);
+		glVertex2f(subject.c.x, subject.c.y);
 		glEnd();
+		/*
+		glUseProgram(scp);
+		GLint loc9 = glGetUniformLocation(scp, "colRGB");
+		if (loc9 != -1)
+		{
+			glUniform3f(loc9,1,1,1);
+
+		}*/
+		/*
+		vec3 np = add(parent.a, n);
+		vec2 np2d = perspectiveProject(np,focalDistance);
+		glBegin(GL_LINES);
+		glVertex2f(subject.a.x, subject.a.y);
+		glVertex2f(np2d.x, np2d.y);
+		glEnd();
+
+		glUniform3f(loc9, 0.9, 0.2, 0.8);
+		glBegin(GL_LINES);
+		vec3 np2 = add(parent.a, vec3{0,0,150});
+		vec2 np2d2 = perspectiveProject(np2, focalDistance);
+		glVertex2f(subject.a.x, subject.a.y);
+		glVertex2f(np2d2.x, np2d2.y);
+		glEnd();
+		*/
+
+		
+
+	
+
 
 	}
 
@@ -726,29 +759,19 @@ gl_FragDepth=0;
 
 
 
-		glUniform3f(shaderuniformlocations.origin, parent.c.x, parent.c.y, parent.c.z);
+		//also need to recalculate origin inside shader
 
 
-
-
-		glUniform3f(shaderuniformlocations.normal, parent.normal.x, parent.normal.y, parent.normal.z);
-
+// need to recalculate normal in shader and put in uniform vairable from with shader
 		glBegin(GL_TRIANGLES);
-			glVertex3f(parent.a.x,parent.a.y,parent.a.z);
-			glVertex3f(parent.b.x, parent.b.y, parent.b.z);
-			glVertex3f(parent.c.x, parent.c.y, parent.c.z);
+		glVertex3f(parent.a.x,parent.a.y,parent.a.z);
 
+		glVertex3f(parent.b.x, parent.b.y, parent.b.z);
 
+		glVertex3f(parent.c.x, parent.c.y, parent.c.z);
+		glEnd();
 
-			glEnd();
-
-
-
-
-
-
-
-
+	
 
 	}
 

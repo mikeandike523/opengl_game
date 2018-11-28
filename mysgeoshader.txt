@@ -1,20 +1,74 @@
-#version 430 core
+#version 420 compatibility
+#define M_PI 3.1415926535897932384626433832795
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 uniform float FAR_PLANE;
 uniform float NEAR_PLANE;
 uniform float focalDistance;
+uniform vec3 CAMERA_YPR;
+uniform vec3 CAMERA_POS;
+out vec3 norm;
+out vec3 orig;
+	mat3 eulerX(float angle){
+		return transpose(mat3(
+			1,0,0,
+			0,cos(angle),-sin(angle),
+			0,sin(angle),cos(angle)
+		));
+	}
+	mat3 eulerY(float angle) {
+		return transpose(mat3(
+			cos(angle),0,sin(angle),
+			0,1,0,
+			-sin(angle),0,cos(angle)
+		));
+	}
+	mat3 eulerZ(float angle) {
+		return transpose(mat3(
+		cos(angle),-sin(angle),0,
+		sin(angle),cos(angle),0,
+		0,0,1
+		));
+	}
+
+	mat3 camRotMatrix(){
+		return eulerY(CAMERA_YPR.x);
+	}
+	vec2 projPoint(vec3 pt){
+		return focalDistance/pt.z*pt.xy;
+	}
+	vec4 makeVertex(vec2 pt,int i){
+	  return gl_ModelViewProjectionMatrix * vec4(pt.xy,0,gl_in[i].gl_Position.w);
+	}
+	void rendTr(vec3 pt1, vec3 pt2, vec3 pt3){
+
+	if(pt1.z>NEAR_PLANE&&pt2.z>NEAR_PLANE&&pt3.z>NEAR_PLANE){
+	norm=cross(pt2-pt1,pt3-pt1);
+	orig=pt1;
+	gl_Position = makeVertex(projPoint(pt1),0);
+		EmitVertex();
+gl_Position = makeVertex(projPoint(pt2),1);
+		EmitVertex();
+gl_Position = makeVertex(projPoint(pt3),2);
+		EmitVertex();
+	EndPrimitive();
+	}
+
+	}
+
 void main(){
-	int i;
+	
+	mat3 crm = camRotMatrix();
+	
+        vec3 trA = crm*(gl_in[0].gl_Position.xyz-vec3(-CAMERA_POS.z,CAMERA_POS.y,CAMERA_POS.x));
+		
+        vec3 trB =crm*(gl_in[1].gl_Position.xyz-vec3(-CAMERA_POS.z,CAMERA_POS.y,CAMERA_POS.x));
+	
+        vec3 trC = crm*(gl_in[2].gl_Position.xyz-vec3(-CAMERA_POS.z,CAMERA_POS.y,CAMERA_POS.x));
+	
+	
+ rendTr(trA,trB,trC);
 
-    for (i = 0; i < gl_in.length(); i++)
-    {
-        gl_Position = gl_in[i].gl_Position;
-		//gl_Position.x*=-1;
-        EmitVertex();
-    }
-
-    EndPrimitive();
 
 }
 

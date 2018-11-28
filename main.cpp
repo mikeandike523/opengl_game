@@ -96,7 +96,8 @@ float fElapsedTime;
 /* Callback handler for window re-paint event */
 void display() {
 	current_ticks = glutGet(GLUT_ELAPSED_TIME);
-
+	glUniform3f(shaderuniformlocations.CAMERA_POS, defaultCamera.position.x, defaultCamera.position.y, defaultCamera.position.z);
+	glUniform3f(shaderuniformlocations.CAMERA_YPR, defaultCamera.angleXZ, defaultCamera.angleZY,0);
 
 	/*
 	GLint m_viewport[4];
@@ -356,8 +357,8 @@ void display() {
 
 			}
 		}
-		defaultCamera.position.x = nnx;
-		defaultCamera.position.z = nnz;
+		defaultCamera.position.x = nx;
+		defaultCamera.position.z = nz;
 
 
 
@@ -365,7 +366,7 @@ void display() {
 
 	}
 
-	mys::rotMatrix=makeRotationMatrixForXZAndZYOnly(M_PI_2 - defaultCamera.angleXZ, -defaultCamera.angleZY);
+	//mys::rotMatrix=makeRotationMatrixForXZAndZYOnly(M_PI_2 - defaultCamera.angleXZ, -defaultCamera.angleZY);
 
 
 
@@ -393,6 +394,7 @@ void display() {
 
 //draw here
 	for (int i = 0;i < StaticTriangles.size();i++) {
+		/*
 		mys::triangle3 T = mys::adjustTriangle3ToCamera(defaultCamera, StaticTriangles[i]);
 		mys::triangle3 result1;
 		mys::triangle3 result2;
@@ -409,8 +411,11 @@ void display() {
 				mys::triangle2CullAndClipOutsideWindowAndRender(mys::projectTriangle(result2, defaultCamera.focalDistance), clipAreaXLeft, clipAreaXRight, clipAreaYTop, clipAreaYBottom, col, result2, defaultCamera.focalDistance);
 			}
 		}
+		*/
+		fastRenderTriangle3(StaticTriangles[i],StaticTriangleColors[i]);
+
 	}
-	
+	/*
 	vec2 pl{ defaultCamera.position.x,defaultCamera.position.z };
 	for (int i = 0;i < coins.size();i++) {
 		coins[i].render();
@@ -423,7 +428,7 @@ void display() {
 	for (int i = 0;i < coins.size();i++) {
 		if(coins[i].enabled)
 		coins[i].rotate(mys_model::yaw_pitch_roll{M_PI_4/(float)32,0,0});
-	}
+	}*/
 
 
 
@@ -675,7 +680,7 @@ int main(int argc, char** argv) {
 		}
 
 
-	
+	/*
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 - 150)} });
 		StaticTriangleColors.push_back(vec3{ 0,0,1 });
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + -150),(float)-50,(float)(rmloc.y * 300 - 150)} });
@@ -686,7 +691,7 @@ int main(int argc, char** argv) {
 		StaticTriangleColors.push_back(vec3{ 0,1,0 });
 		StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + -150),(float)50,(float)(rmloc.y * 300 - 150)} });
 		StaticTriangleColors.push_back(vec3{ 0,1,0 });
-
+		*/
 		if (abs(roomOccupation(vec2_i{ rmloc.x + 1,rmloc.y }, roomRad, rooms) == 1)) {
 
 			StaticTriangles.push_back(triangle3{ vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 + 150)},vec3{(float)(rmloc.x * 300 + 150),(float)50,(float)(rmloc.y * 300 - 150)},vec3{(float)(rmloc.x * 300 + 150),(float)-50,(float)(rmloc.y * 300 - 150)} });
@@ -840,9 +845,9 @@ int main(int argc, char** argv) {
 	glAttachShader(ShaderProgram, geometryShader);
 	
 
-
 	glLinkProgram(ShaderProgram);
 	glUseProgram(ShaderProgram);
+
 	shaderuniformlocations.focalDistance = glGetUniformLocation(ShaderProgram, "focalDistance");
 	shaderuniformlocations.w = glGetUniformLocation(ShaderProgram, "w");
 	shaderuniformlocations.h = glGetUniformLocation(ShaderProgram, "h");
@@ -853,6 +858,8 @@ int main(int argc, char** argv) {
 	shaderuniformlocations.normal = glGetUniformLocation(ShaderProgram, "normal");
 	shaderuniformlocations.FAR_PLANE = glGetUniformLocation(ShaderProgram, "FAR_PLANE");
 	shaderuniformlocations.NEAR_PLANE = glGetUniformLocation(ShaderProgram, "NEAR_PLANE");
+	shaderuniformlocations.CAMERA_POS = glGetUniformLocation(ShaderProgram, "CAMERA_POS");
+	shaderuniformlocations.CAMERA_YPR= glGetUniformLocation(ShaderProgram, "CAMERA_YPR");
 	glUniform1f(shaderuniformlocations.focalDistance, defaultCamera.focalDistance);
 	glUniform1f(shaderuniformlocations.FAR_PLANE, FAR_PLANE);
 	glUniform1f(shaderuniformlocations.NEAR_PLANE ,NEAR_PLANE);
