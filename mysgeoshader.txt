@@ -238,7 +238,12 @@ out vec3 orig;
 	}
 
 
+
 int near_cut(vec3 i1, vec3 i2, vec3 i3,inout vec3 a1, inout vec3 a2, inout vec3 a3, inout vec3 b1, inout vec3 b2, inout vec3 b3) {
+//rest of code works fine, need to write code here
+
+
+
 	return 0;
 }
 
@@ -267,8 +272,10 @@ gl_Position = makeVertex(pt2d3,2);
 	}
 
 	void rendTr(vec3 pt1, vec3 pt2, vec3 pt3){
+		vec3 a1,b1,c1,a2,b2,c2;
+	int numtrs = near_cut(pt1,pt2,pt3,a1,b1,c1,a2,b2,c2);
 
-	if(pt1.z>NEAR_PLANE&&pt2.z>NEAR_PLANE&&pt3.z>NEAR_PLANE&&pt1.z<FAR_PLANE&&pt2.z<FAR_PLANE&&pt3.z<FAR_PLANE){
+	if(numtrs==1){
 		rendGoodNPCutTr(pt1,pt2,pt3);
 	}
 
