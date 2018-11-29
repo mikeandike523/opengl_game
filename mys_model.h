@@ -151,12 +151,8 @@ namespace mys_model {
 				for (int i = 0;i < composition.size();i++) {
 					fastRenderTriangle3(composition[i], MODEL_YELLOW);
 				}
-			/*
-			else {
-				for (int i = 0;i < composition.size();i++) {
-					fastRenderTriangle3(composition[i], vec3{1,0,0});
-				}
-			}*/
+			
+	
 
 
 

@@ -228,7 +228,7 @@ out vec3 orig;
 	}
 
 	mat3 camRotMatrix(){
-		return eulerY(-(M_PI/2-CAMERA_YPR.x));
+		return eulerX(CAMERA_YPR.y)*eulerY(-(M_PI/2-CAMERA_YPR.x));
 	}
 	vec2 projPoint(vec3 pt){
 		return focalDistance/pt.z*pt.xy;

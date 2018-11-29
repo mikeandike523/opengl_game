@@ -288,7 +288,9 @@ void display() {
 						nnz = player.y + nv.y;
 					}
 					if (whichCase == 3) {
-						
+						vec2 perp = perpendicular2(subtract(player,junction));
+
+							veloc = projection(veloc, perp);
 						nnx = player.x + veloc.x;
 						nnz = player.y + veloc.y;
 
@@ -878,7 +880,7 @@ int main(int argc, char** argv) {
 	//std::cout << crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).x<<","<< crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).y <<","<< crossProduct(vec3{ 0,0,1 }, vec3{ 0,1,0 }).z << std::endl;
 
 	glutDisplayFunc(display);     // Register callback handler for window re-paint
-
+//	defaultCamera.angleZY = M_PI_2 / 3;
 	
 	glutReshapeFunc(reshape);     // Register callback handler for window re-shape
 	//glutTimerFunc(0, Timer, 0);   // First timer call immediately
