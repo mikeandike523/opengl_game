@@ -289,15 +289,14 @@ void display() {
 						nnz = player.y + nv.y;
 					}
 					if (whichCase == 3) {
-						vec2 perp = perpendicular2(subtract(player, junction));
-
-						veloc = projection(veloc, perp);
-						nnx = player.x + veloc.x;
-						nnz = player.y + veloc.y;
+					
+						
+							nnx = player.x + veloc.x;
+							nnz = player.y + veloc.y;
+						
 
 					}
-
-
+				
 				}
 
 				if (concavity == CONCAVE) {
