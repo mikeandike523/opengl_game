@@ -94,11 +94,12 @@ bool keyleftisdown = false;
 int current_ticks, delta_ticks;
 float fElapsedTime;
 /* Callback handler for window re-paint event */
+
 void display() {
 	current_ticks = glutGet(GLUT_ELAPSED_TIME);
 	glUniform3f(shaderuniformlocations.CAMERA_POS, defaultCamera.position.x, defaultCamera.position.y, defaultCamera.position.z);
-	glUniform3f(shaderuniformlocations.CAMERA_YPR, defaultCamera.angleXZ, defaultCamera.angleZY,0);
-	rotMatrix = makeRotationMatrixForXZAndZYOnly(M_PI_2-defaultCamera.angleXZ,- defaultCamera.angleZY);
+	glUniform3f(shaderuniformlocations.CAMERA_YPR, defaultCamera.angleXZ, defaultCamera.angleZY, 0);
+	rotMatrix = makeRotationMatrixForXZAndZYOnly(M_PI_2 - defaultCamera.angleXZ, -defaultCamera.angleZY);
 	/*
 	GLint m_viewport[4];
 
@@ -258,14 +259,14 @@ void display() {
 
 
 					if (whichCase == 0) {
-						
-						
-					
+
+
+
 
 						nnx = player.x + veloc.x;
 						nnz = player.y + veloc.y;
 
-						
+
 					}
 
 					if (whichCase == 1) {
@@ -288,9 +289,9 @@ void display() {
 						nnz = player.y + nv.y;
 					}
 					if (whichCase == 3) {
-						vec2 perp = perpendicular2(subtract(player,junction));
+						vec2 perp = perpendicular2(subtract(player, junction));
 
-							veloc = projection(veloc, perp);
+						veloc = projection(veloc, perp);
 						nnx = player.x + veloc.x;
 						nnz = player.y + veloc.y;
 
@@ -374,14 +375,14 @@ void display() {
 	if (keyleftisdown)
 	{
 
-		defaultCamera.angleXZ += (float) M_PI*fElapsedTime;
+		defaultCamera.angleXZ += (float)M_PI*fElapsedTime;
 	}
 
 
 	if (keyrightisdown)
 	{
 
-		defaultCamera.angleXZ -= (float) M_PI* fElapsedTime;
+		defaultCamera.angleXZ -= (float)M_PI* fElapsedTime;
 	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -392,25 +393,25 @@ void display() {
 
 	for (int i = 0;i < StaticTriangles.size();i++) {
 
-		fastRenderTriangle3(StaticTriangles[i],StaticTriangleColors[i]);
+		fastRenderTriangle3(StaticTriangles[i], StaticTriangleColors[i]);
 
 	}
 	mys_model::useMeshSubCoords();
-	
+
 	vec2 pl{ defaultCamera.position.x,defaultCamera.position.z };
 	for (int i = 0;i < coins.size();i++) {
 		coins[i].render();
-		if(coins[i].enabled)
-		if (magnitude(subtract(vec2{ coins[i].position.x,coins[i].position.z },pl)) < COLLECT_RADIUS)
-			coins[i].disable();
+		if (coins[i].enabled)
+			if (magnitude(subtract(vec2{ coins[i].position.x,coins[i].position.z }, pl)) < COLLECT_RADIUS)
+				coins[i].disable();
 
 	}
 
 	for (int i = 0;i < coins.size();i++) {
-		if(coins[i].enabled)
-		coins[i].rotate(mys_model::yaw_pitch_roll{M_PI_4/(float)32,0,0});
+		if (coins[i].enabled)
+			coins[i].rotate(mys_model::yaw_pitch_roll{ M_PI_4 / (float)32,0,0 });
 	}
-	
+
 
 
 	glutSwapBuffers();  // Swap front and back buffers (of double buffered mode)
