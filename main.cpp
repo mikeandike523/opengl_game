@@ -21,6 +21,7 @@ constexpr float WALL_BUFFER = 30;
 constexpr float CORNER_BUFFER = 5;
 constexpr float COLLECT_RADIUS = 50;
 
+
 std::vector<mys_model::mesh> coins;
 inline void gen_wall(int x, int z, int side) {
 	//vec2_i offs = compassToVec2_i(side);
@@ -171,6 +172,7 @@ void display() {
 
 		}
 
+
 		if (ct == 1) {
 
 			//	vec2 close = closest(wall1, player);
@@ -214,6 +216,9 @@ void display() {
 					float dist2;
 					vec2 normv = normalize(veloc);
 					vec2 junction = getJunction(wall1, wall2);
+				
+
+
 					if (get_line_intersection_special(wall1, junction, player, veloc, ix1, iy1))
 					{
 						has1 = true;
@@ -254,14 +259,23 @@ void display() {
 						}
 
 					}
-				//	std::cout << whichCase << std::endl;
-
-
-
+			
+			
 					if (whichCase == 0) {
-
-						nnx = player.x + veloc.x;
-						nnz = player.y + veloc.y;
+			
+		
+							int sidex = find_side(player, junction, side1, side2);
+							if (sidex == -1) {
+								nnx = player.x + veloc.x;
+								nnz = player.y + veloc.y;
+							}
+							else if (sidex == side1) {
+								whichCase = 1;
+							}
+							else if (sidex == side2) {
+								whichCase = 2;
+							}
+						
 					}
 					if (whichCase == 3) {
 						int sidex = find_side(player, junction, side1, side2);

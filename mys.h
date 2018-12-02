@@ -405,6 +405,7 @@ gl_FragDepth=0;
 
 		float det = topleft * bottomright - topright * bottomleft;
 		if (abs(det) < STANDARD_EPSILON) {
+
 			return 0; //singular matrix no intersection
 
 		}
@@ -417,6 +418,7 @@ gl_FragDepth=0;
 
 			return 1;
 		}
+	
 
 
 
@@ -968,7 +970,7 @@ gl_FragDepth=0;
 	
 	}
 
-	int find_side(const vec2 &player, const vec2& junction, int side1, int side2) {
+	int find_side(const vec2 &player, const vec2& junction, const int& side1, const int& side2) {
 		vec2 v1 = vec2_itovec2(compassOppositeVec2_i(side1));
 		vec2 v2 = vec2_itovec2(compassOppositeVec2_i(side2));
 		vec2 jp = subtract(player, junction);
