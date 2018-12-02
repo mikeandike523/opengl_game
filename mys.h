@@ -968,7 +968,9 @@ gl_FragDepth=0;
 	
 	}
 
-
+	int find_side(vec2 player, vec2 junction, int side1, int side2) {
+	
+	}
 	mys::camera defaultCamera;
 
 }

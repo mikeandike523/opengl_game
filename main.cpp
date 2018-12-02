@@ -20,6 +20,7 @@ std::vector<int> wallDirs;
 constexpr float WALL_BUFFER = 30;
 constexpr float CORNER_BUFFER = 5;
 constexpr float COLLECT_RADIUS = 50;
+
 std::vector<mys_model::mesh> coins;
 inline void gen_wall(int x, int z, int side) {
 	//vec2_i offs = compassToVec2_i(side);
@@ -243,13 +244,13 @@ void display() {
 						whichCase = 2;
 					}
 					if (has1&&has2) {
-						if (dist1 == dist2) {
+						if (dist1==dist2 ){
 							whichCase == 3;
 						}
-						if (dist1 < dist2) {
+						else if (dist1 < dist2) {
 							whichCase = 1;
 						}
-						if (dist1 > dist2) {
+						else if (dist2 < dist1) {
 							whichCase = 2;
 						}
 
@@ -289,12 +290,8 @@ void display() {
 						nnz = player.y + nv.y;
 					}
 					if (whichCase == 3) {
-					
+			
 						
-							nnx = player.x + veloc.x;
-							nnz = player.y + veloc.y;
-						
-
 					}
 				
 				}
