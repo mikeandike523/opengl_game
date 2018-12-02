@@ -406,11 +406,11 @@ void display() {
 
 	glUniform1i(shaderuniformlocations.USE_MESH_COORDS, 0);
 
-	for (int i = 0;i < StaticTriangles.size();i++) {
 
-		fastRenderTriangle3(StaticTriangles[i], StaticTriangleColors[i]);
 
-	}
+		fastRenderTriangle3s(StaticTriangles, StaticTriangleColors);
+
+	
 	mys_model::useMeshSubCoords();
 
 	vec2 pl{ defaultCamera.position.x,defaultCamera.position.z };
@@ -809,6 +809,7 @@ int main(int argc, char** argv) {
 
 	glCompileShaderARB(fragmentShader);
 	GLint success = 0;
+	std::cout << "frament..........." << std::endl;
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 
@@ -826,6 +827,7 @@ int main(int argc, char** argv) {
 	}
 
 	 success = 0;
+	 std::cout << "vertex..........." << std::endl;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 
@@ -849,7 +851,7 @@ int main(int argc, char** argv) {
 	glAttachShader(ShaderProgram, fragmentShader);
 
 
-
+	std::cout << "geo.........." << std::endl;
 	std::string mysgeoshadersourecode = readfileintostdstring(mysgeoshaderfilepath);
 //	std::cout << "This is the geoshader sourcecode:" << std::endl;
 //	std::cout << mysgeoshadersourecode << std::endl;
@@ -869,7 +871,7 @@ int main(int argc, char** argv) {
 	shaderuniformlocations.h = glGetUniformLocation(ShaderProgram, "h");
 	shaderuniformlocations.right = glGetUniformLocation(ShaderProgram, "right");
 	shaderuniformlocations.top = glGetUniformLocation(ShaderProgram, "top");
-	shaderuniformlocations.colRGB = glGetUniformLocation(ShaderProgram, "colRGB");
+	//shaderuniformlocations.colRGB = glGetUniformLocation(ShaderProgram, "colRGB");
 	shaderuniformlocations.origin = glGetUniformLocation(ShaderProgram, "origin");
 	shaderuniformlocations.normal = glGetUniformLocation(ShaderProgram, "normal");
 	shaderuniformlocations.FAR_PLANE = glGetUniformLocation(ShaderProgram, "FAR_PLANE");

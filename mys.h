@@ -36,6 +36,7 @@ namespace mys {
 uniform int USE_MESH_COORDS;
 uniform vec3 MESH_ORIG;
 uniform vec3 MESH_YPR;
+out vec3 col;
 	mat3 eulerX(float angle){
 		return transpose(mat3(
 			1,0,0,
@@ -73,6 +74,7 @@ else{
 	v=MESH_ORIG+eulerZ(MESH_YPR.z)*eulerX(MESH_YPR.y)*eulerY(MESH_YPR.x)*v;
 	gl_Position=vec4(v,w);
 }
+col=gl_Color.xyz;
     
 }
 
@@ -80,7 +82,7 @@ else{
 	//credit https://stackoverflow.com/a/53349063/5166365 for helping me fix this
 	const char* fragment_shader = R"(
 #version 420 compatibility
-uniform vec3 colRGB;
+in vec3 colRGB;
 uniform vec3 origin;
 uniform vec3 normal;
 uniform float focalDistance;
@@ -787,7 +789,7 @@ gl_FragDepth=0;
 	void fastRenderTriangle3(const triangle3& parent, const vec3& color) {
 
 
-		glUniform3f(shaderuniformlocations.colRGB, color.x, color.y, color.z);
+		//glUniform3f(shaderuniformlocations.colRGB, color.x, color.y, color.z);
 
 
 
@@ -796,6 +798,7 @@ gl_FragDepth=0;
 
 // need to recalculate normal in shader and put in uniform vairable from with shader
 		glBegin(GL_TRIANGLES);
+		glColor3f(color.x, color.y, color.z);
 		glVertex3f(parent.a.x,parent.a.y,parent.a.z);
 
 		glVertex3f(parent.b.x, parent.b.y, parent.b.z);
@@ -809,6 +812,46 @@ gl_FragDepth=0;
 
 
 
+	void fastRenderTriangle3s(const std::vector<triangle3>& parents, const std::vector<vec3>& colors) {
+
+
+		glBegin(GL_TRIANGLES);
+		for (int i = 0;i < parents.size();i++) {
+			
+		
+			glColor3f(colors[i].x, colors[i].y, colors[i].z);
+			glVertex3f(parents[i].a.x, parents[i].a.y, parents[i].a.z);
+
+			glVertex3f(parents[i].b.x, parents[i].b.y, parents[i].b.z);
+
+			glVertex3f(parents[i].c.x, parents[i].c.y, parents[i].c.z);
+		
+		}
+		glEnd();
+	}
+
+
+	void fastRenderTriangle3s(const std::vector<triangle3>& parents, const vec3& color) {
+
+
+
+		glBegin(GL_TRIANGLES);
+		for (int i = 0;i < parents.size();i++) {
+
+			glColor3f(color.x, color.y, color.z);
+			glVertex3f(parents[i].a.x, parents[i].a.y, parents[i].a.z);
+
+			glVertex3f(parents[i].b.x, parents[i].b.y, parents[i].b.z);
+
+			glVertex3f(parents[i].c.x, parents[i].c.y, parents[i].c.z);
+		
+		}
+		glEnd();
+	}
+
+
+
+	
 
 
 

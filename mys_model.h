@@ -148,9 +148,9 @@ namespace mys_model {
 			// if (canDraw) {
 				//rebuild();
 			if (cullModel())
-				for (int i = 0;i < composition.size();i++) {
-					fastRenderTriangle3(composition[i], MODEL_YELLOW);
-				}
+			
+					fastRenderTriangle3s(composition, MODEL_YELLOW);
+				
 			
 	
 
