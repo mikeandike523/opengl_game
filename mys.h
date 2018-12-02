@@ -968,8 +968,17 @@ gl_FragDepth=0;
 	
 	}
 
-	int find_side(vec2 player, vec2 junction, int side1, int side2) {
-	
+	int find_side(const vec2 &player, const vec2& junction, int side1, int side2) {
+		vec2 v1 = vec2_itovec2(compassOppositeVec2_i(side1));
+		vec2 v2 = vec2_itovec2(compassOppositeVec2_i(side2));
+		vec2 jp = subtract(player, junction);
+		float a1 = angleBetween(v1, jp);
+		float a2 = angleBetween(v2, jp);
+		if (a1< a2)
+			return side1;
+		if (a2 < a1)
+			return side2;
+		return -1;
 	}
 	mys::camera defaultCamera;
 

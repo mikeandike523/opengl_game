@@ -244,13 +244,12 @@ void display() {
 						whichCase = 2;
 					}
 					if (has1&&has2) {
-						if (dist1==dist2 ){
-							whichCase == 3;
-						}
-						else if (dist1 < dist2) {
+						if (dist1 == dist2)
+							whichCase = 3;
+						if (dist1 < dist2) {
 							whichCase = 1;
 						}
-						else if (dist2 < dist1) {
+						if (dist2 < dist1) {
 							whichCase = 2;
 						}
 
@@ -261,15 +260,25 @@ void display() {
 
 					if (whichCase == 0) {
 
-
-
-
 						nnx = player.x + veloc.x;
 						nnz = player.y + veloc.y;
+					}
+					if (whichCase == 3) {
+						int sidex = find_side(player, junction, side1, side2);
+						if (sidex == -1) {
+							nnx = player.x;
+							nnz = player.y;
+						}
+						else if (sidex == side1) {
+							whichCase = 1;
+						}
+						else if (sidex == side2)
 
+						{
+							whichCase = 2;
+						}
 
 					}
-
 					if (whichCase == 1) {
 						vec2 diff = subtract(vec2{ wall1.p1_x,wall1.p1_y }, vec2{ wall1.p0_x,wall1.p0_y });
 						//vec2 orth = perpendicular2(diff);
@@ -289,11 +298,6 @@ void display() {
 						nnx = player.x + nv.x;
 						nnz = player.y + nv.y;
 					}
-					if (whichCase == 3) {
-			
-						
-					}
-				
 				}
 
 				if (concavity == CONCAVE) {
