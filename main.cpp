@@ -205,7 +205,7 @@ void display() {
 				if (concavity == CONVEX)
 				{
 
-
+				//	std::cout << "convex" << std::endl;
 					bool has1 = false;
 					bool has2 = false;
 					float ix1, ix2, iy1, iy2;
@@ -254,7 +254,7 @@ void display() {
 						}
 
 					}
-
+				//	std::cout << whichCase << std::endl;
 
 
 
@@ -301,6 +301,7 @@ void display() {
 				}
 
 				if (concavity == CONCAVE) {
+				//	std::cout << "concave" << std::endl;
 
 					vec2 nv = veloc;
 					vec2 axis1 = vec2_itovec2(compassOppositeVec2_i(side1));
