@@ -20,6 +20,7 @@ std::vector<int> wallDirs;
 constexpr float WALL_BUFFER = 30;
 constexpr float CORNER_BUFFER = 5;
 constexpr float COLLECT_RADIUS = 50;
+int cointimer = 0;
 
 
 std::vector<mys_model::mesh> coins;
@@ -83,7 +84,7 @@ GLfloat xSpeedSaved, ySpeedSaved;  // To support resume
 
 /* Initialize OpenGL Graphics */
 void initGL() {
-	glClearColor(0.0, 0.0, 0.0, 1.0); // Set background (clear) color to black
+	glClearColor(0, 0, 0, 1.0); // Set background (clear) color to black
 }
 
 bool keyaisdown = false;
@@ -421,10 +422,16 @@ void display() {
 				coins[i].disable();
 
 	}
-
+	static float coinangle= 0;
+	coinangle += 2 * M_PI*fElapsedTime;
+	if (coinangle > 2 * M_PI)
+		coinangle = 0;
 	for (int i = 0;i < coins.size();i++) {
-		if (coins[i].enabled)
+		if (coins[i].enabled) {
 			coins[i].rotate(mys_model::yaw_pitch_roll{ M_PI_4 / (float)32,0,0 });
+
+			coins[i].moveTo(vec3{ coins[i].position.x,sin(coinangle)*5 ,coins[i].position.z });
+		}
 	}
 
 
@@ -434,7 +441,7 @@ void display() {
 	delta_ticks = glutGet(GLUT_ELAPSED_TIME) - current_ticks; //the time, in ms, that took to render the scene
 	if (delta_ticks > 0)
 		fElapsedTime = (float)delta_ticks / (float)1000;
-
+	
 	glutPostRedisplay();
 }
 
@@ -606,34 +613,7 @@ void setRoomOpen(vec2_i rm, int roomRad, int* rooms) {
 void cleanup() {
 
 }
-int createShader(GLint type, const std::string source) {
-	GLuint shd;
-	shd = glCreateShader(type);
-	const GLcharARB* src = source.c_str();
-	glShaderSourceARB(shd, 1, &src ,nullptr);
 
-
-	glCompileShaderARB(shd);
-
-
-	GLint success = 0;
-	glGetShaderiv(shd, GL_COMPILE_STATUS, &success);
-	if (!success) {
-
-		GLint maxLength = 0;
-		glGetShaderiv(shd, GL_INFO_LOG_LENGTH, &maxLength);
-
-		// The maxLength includes the NULL character
-		std::vector<GLchar> errorLog(maxLength);
-		glGetShaderInfoLog(shd, maxLength, &maxLength, &errorLog[0]);
-		for (int i = 0;i < errorLog.size();i++) {
-			printf("%c", errorLog[i]);
-		}
-
-
-	}
-	return shd;
-}
 /* Main function: GLUT runs as a console application starting at main() */
 int main(int argc, char** argv) {
 

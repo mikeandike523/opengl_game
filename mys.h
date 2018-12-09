@@ -1025,6 +1025,34 @@ gl_FragDepth=0;
 			return side2;
 		return -1;
 	}
+	int createShader(GLint type, const std::string source) {
+		GLuint shd;
+		shd = glCreateShader(type);
+		const GLcharARB* src = source.c_str();
+		glShaderSourceARB(shd, 1, &src, nullptr);
+
+
+		glCompileShaderARB(shd);
+
+
+		GLint success = 0;
+		glGetShaderiv(shd, GL_COMPILE_STATUS, &success);
+		if (!success) {
+
+			GLint maxLength = 0;
+			glGetShaderiv(shd, GL_INFO_LOG_LENGTH, &maxLength);
+
+			// The maxLength includes the NULL character
+			std::vector<GLchar> errorLog(maxLength);
+			glGetShaderInfoLog(shd, maxLength, &maxLength, &errorLog[0]);
+			for (int i = 0;i < errorLog.size();i++) {
+				printf("%c", errorLog[i]);
+			}
+
+
+		}
+		return shd;
+	}
 	mys::camera defaultCamera;
 
 }

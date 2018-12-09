@@ -14,4 +14,13 @@ namespace mys_fileoperations {
 		return strStream.str();//str holds the content of the file
 	
 	}
+	std::string readfileintostdstring(std::string filepath) {
+		std::ifstream inFile;
+		inFile.open(filepath);//open the input file
+
+		std::stringstream strStream;
+		strStream << inFile.rdbuf();//read the file
+		return strStream.str();//str holds the content of the file
+
+	}
 }
